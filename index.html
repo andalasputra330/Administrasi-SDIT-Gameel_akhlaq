@@ -566,6 +566,9 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
             <select id="fJbGuru" class="form-select form-select-sm" style="width:160px;" onchange="filterJurnalBelajar()">
               <option value="">Semua Guru</option>
             </select>
+            <select id="fJbMapel" class="form-select form-select-sm" style="width:160px;" onchange="filterJurnalBelajar()">
+              <option value="">Semua Mapel</option>
+            </select>
             <div class="ms-auto d-flex gap-2">
               <button class="btn-dl-pdf" onclick="downloadPDF('jurnal-belajar')">
                 <i class="bi bi-file-earmark-pdf-fill"></i>PDF
@@ -1159,7 +1162,7 @@ function showPage(page) {
   document.getElementById("topbarTitle").textContent = titles[page] || "Dashboard";
 
   // Muat data sesuai halaman
-  if (page === "rekap-belajar")    renderJurnalBelajar();
+    if (page === "rekap-belajar")    filterJurnalBelajar(); // Ubah menjadi panggil fungsi filter terlebih dahulu
   if (page === "rekap-pelatihan")  renderPelatihan();
   if (page === "rekap-prestasi")   renderPrestasiTable();
   if (page === "data-guru")        renderGuru();
@@ -1223,11 +1226,17 @@ function populateDropdowns() {
     state.kelas.forEach(k => el.innerHTML += `<option value="${k.Nama_Kelas}">${k.Nama_Kelas}</option>`);
   });
   // Mapel
+  // Mapel
   const selMapel = document.getElementById("jb_mapel");
-  if (selMapel) {
-    selMapel.innerHTML = '<option value="">-- Pilih Mapel --</option>';
-    state.mapel.forEach(m => selMapel.innerHTML += `<option value="${m.Nama_Mapel}">${m.Nama_Mapel}</option>`);
-  }
+  const fJbMapel = document.getElementById("fJbMapel"); // <-- Deklarasi id filter baru
+  
+  if (selMapel) selMapel.innerHTML = '<option value="">-- Pilih Mapel --</option>';
+  if (fJbMapel) fJbMapel.innerHTML = '<option value="">Semua Mapel</option>';
+  
+  state.mapel.forEach(m => {
+    if (selMapel) selMapel.innerHTML += `<option value="${m.Nama_Mapel}">${m.Nama_Mapel}</option>`;
+    if (fJbMapel) fJbMapel.innerHTML += `<option value="${m.Nama_Mapel}">${m.Nama_Mapel}</option>`;
+  });
   // Guru filter
   const selGuru = ["fJbGuru","fJpGuru"];
   selGuru.forEach(id => {
@@ -1410,27 +1419,40 @@ function renderJurnalBelajar(filtered) {
       <td style="max-width:180px;white-space:normal;">${r.Materi||"—"}</td>
       <td style="max-width:140px;white-space:normal;color:#888;">${r.Catatan||""}</td>
     </tr>`).join("");
-  // Stats — ambil bulan dari tanggal yang sudah diformat (dd/MM/yyyy)
+  // FIX: Hitung angka statistik berdasarkan variabel 'data' (hasil pencarian/filter)
   const now   = new Date();
   const bulan = String(now.getMonth()+1).padStart(2,"0");
-  document.getElementById("st_jb_total").textContent = state.jurnalBelajar.length;
-  document.getElementById("st_jb_bulan").textContent = state.jurnalBelajar.filter(r => {
-    const tgl = formatTanggal(r.Tanggal); // dd/MM/yyyy
-    return tgl.slice(3,5) === bulan;      // ambil bagian MM
+  document.getElementById("st_jb_total").textContent = data.length;
+  document.getElementById("st_jb_bulan").textContent = data.filter(r => {
+    const tgl = formatTanggal(r.Tanggal); 
+    return tgl.slice(3,5) === bulan;      
   }).length;
-  const guruSet = new Set(state.jurnalBelajar.map(r => r.Guru_Pengampu));
+  const guruSet = new Set(data.map(r => r.Guru_Pengampu));
   document.getElementById("st_jb_guru").textContent  = guruSet.size;
-  document.getElementById("st_jb_inval").textContent = state.jurnalBelajar.filter(r => r.Status_Guru === "Inval").length;
+  document.getElementById("st_jb_inval").textContent = data.filter(r => r.Status_Guru === "Inval").length;
 }
 
 function filterJurnalBelajar() {
   const bulan = document.getElementById("fJbBulan").value;
   const kelas = document.getElementById("fJbKelas").value;
   const guru  = document.getElementById("fJbGuru").value;
+  const mapel = document.getElementById("fJbMapel").value; // <-- Tangkap filter mapel
+  
   let data = [...state.jurnalBelajar];
+
+  // FIX: Jika login sebagai guru, pastikan hanya memfilter datanya sendiri
+  if (state.user && state.user.role === "guru") {
+    data = data.filter(r => r.Guru_Pengampu === state.user.nama);
+    document.getElementById("fJbGuru").style.display = "none"; // Sembunyikan filter guru untuk user guru
+  } else if (guru) {
+    // Jika admin, jalankan filter guru berdasarkan pilihan
+    data = data.filter(r => r.Guru_Pengampu === guru);
+  }
+
   if (bulan) data = data.filter(r => formatTanggal(r.Tanggal).slice(3,5) === bulan);
   if (kelas) data = data.filter(r => r.Kelas === kelas);
-  if (guru)  data = data.filter(r => r.Guru_Pengampu === guru);
+  if (mapel) data = data.filter(r => r.Mapel === mapel); // <-- Terapkan logika mapel
+
   renderJurnalBelajar(data);
 }
 
