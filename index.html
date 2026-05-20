@@ -1401,6 +1401,7 @@ document.addEventListener("click", e => {
 // ── RENDER TABLES ─────────────────────────────────────────
 function renderJurnalBelajar(filtered) {
   const data  = filtered !== undefined ? filtered : state.jurnalBelajar;
+  state.activeJb = data;
   const tbody = document.getElementById("tbodyJurnalBelajar");
   if (!data.length) {
     tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted py-3">Belum ada data</td></tr>';
@@ -1458,6 +1459,7 @@ function filterJurnalBelajar() {
 
 function renderPelatihan(filtered) {
   const data  = filtered !== undefined ? filtered : state.jurnalPelatihan;
+  state.activeJp = data;
   const tbody = document.getElementById("tbodyPelatihan");
   if (!data.length) { tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Belum ada data</td></tr>'; return; }
   tbody.innerHTML = data.map(r => `
@@ -1478,6 +1480,7 @@ function filterPelatihan() {
 
 function renderPrestasiTable(filtered) {
   const data  = filtered !== undefined ? filtered : state.prestasi;
+  state.activePs = data;
   const tbody = document.getElementById("tbodyPrestasi");
   if (!data.length) { tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Belum ada data</td></tr>'; return; }
   tbody.innerHTML = data.map(r => `
@@ -1786,7 +1789,7 @@ function downloadPDF(type) {
   let head, body;
   if (type === "jurnal-belajar") {
     head = [["Tanggal","Kelas","Mapel","Jam Ke","Jam Masuk","Guru Pengampu","Status","Metode","Materi","Catatan"]];
-    body = state.jurnalBelajar.map(r => [
+    body = state.activeJb.map(r => [
       formatTanggal(r.Tanggal), r.Kelas||"", r.Mapel||"",
       r.Jam_Ke||"", formatJam(r.Jam_Masuk),
       r.Guru_Pengampu||"", r.Status_Guru||"",
@@ -1795,13 +1798,13 @@ function downloadPDF(type) {
     ]);
   } else if (type === "pelatihan") {
     head = [["Tanggal","Nama Pelatihan","Penyelenggara","Guru","Durasi","Sertifikat"]];
-    body = state.jurnalPelatihan.map(r => [
+    body = state.activeJp.map(r => [
       formatTanggal(r.Tanggal),r.Nama_Pelatihan,r.Penyelenggara,
       r.Guru_Peserta,r.Durasi+" jam",r.Sertifikat
     ]);
   } else {
     head = [["Tanggal","Nama Siswa","Kelas","Lomba","Tingkat","Peringkat"]];
-    body = state.prestasi.map(r => [
+    body = state.activePs.map(r => [
       formatTanggal(r.Tanggal),r.Nama_Siswa,r.Kelas,
       r.Nama_Lomba,r.Tingkat,r.Peringkat
     ]);
@@ -1893,7 +1896,7 @@ function downloadExcel(type) {
       ["REKAP JURNAL PEMBELAJARAN"],
       [],
       ["Tanggal","Kelas","Mata Pelajaran","Jam Ke","Jam Masuk","Guru Pengampu","Status Guru","Metode","Materi","Catatan"],
-      ...state.jurnalBelajar.map(r => [
+      ...state.activeJb.map(r => [
         formatTanggal(r.Tanggal), r.Kelas||"", r.Mapel||"",
         r.Jam_Ke||"", formatJam(r.Jam_Masuk),
         r.Guru_Pengampu||"", r.Status_Guru||"",
@@ -1907,7 +1910,7 @@ function downloadExcel(type) {
       ["REKAP JURNAL PELATIHAN"],
       [],
       ["Tanggal","Nama Pelatihan","Penyelenggara","Guru Peserta","Durasi (Jam)","Sertifikat","Catatan"],
-      ...state.jurnalPelatihan.map(r => [
+      ...state.activeJp.map(r => [
         formatTanggal(r.Tanggal),r.Nama_Pelatihan,r.Penyelenggara,
         r.Guru_Peserta,r.Durasi,r.Sertifikat,r.Catatan
       ]),
@@ -1919,7 +1922,7 @@ function downloadExcel(type) {
       ["REKAP PRESTASI SISWA"],
       [],
       ["Tanggal","NISN","Nama Siswa","Kelas","Jenis Prestasi","Tingkat","Peringkat","Nama Lomba","Pembimbing","Catatan"],
-      ...state.prestasi.map(r => [
+      ...state.activePs.map(r => [
         formatTanggal(r.Tanggal),r.NISN,r.Nama_Siswa,r.Kelas,
         r.Jenis_Prestasi,r.Tingkat,r.Peringkat,r.Nama_Lomba,r.Pembimbing,r.Catatan
       ]),
