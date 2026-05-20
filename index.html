@@ -284,7 +284,8 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
     <!-- Status koneksi API -->
     <div id="apiStatusBar" style="margin-top:12px;padding:7px 12px;border-radius:8px;font-size:.75rem;text-align:center;"></div>
 
-    <div class="text-center mt-2">
+    <!-- Tombol Pengaturan URL Disembunyikan karena sudah otomatis terhubung -->
+    <div class="text-center mt-2" style="display: none;">
       <a href="#" onclick="showSetupPage()" style="font-size:.76rem;color:var(--orange);text-decoration:none;">
         <i class="bi bi-gear me-1"></i>Pengaturan URL Google Apps Script
       </a>
@@ -856,14 +857,14 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
 // ═══════════════════════════════════════════════════════════
 //  KONFIGURASI — URL diisi via form Setup, bukan console
 // ═══════════════════════════════════════════════════════════
-let API_URL = localStorage.getItem("SDIT_API_URL") || "";
+let API_URL = "https://script.google.com/macros/s/AKfycbxsH2u6Z8zc8-aFHT4yucjRVcEWvEfCHJc-1Jckcj1GEnO9hhD1d5NAkpOZhQskMEPLPA/exec";
 
 // ── HALAMAN SETUP URL API ─────────────────────────────────
 function showSetupPage() {
   document.getElementById("pageLogin").style.display  = "none";
   document.getElementById("pageSetup").style.display  = "flex";
   // Tampilkan URL yang sudah tersimpan jika ada
-  const saved = localStorage.getItem("SDIT_API_URL");
+  const saved = "https://script.google.com/macros/s/AKfycbxsH2u6Z8zc8-aFHT4yucjRVcEWvEfCHJc-1Jckcj1GEnO9hhD1d5NAkpOZhQskMEPLPA/exec";
   if (saved) {
     document.getElementById("existingUrlInfo").style.display = "block";
     document.getElementById("existingUrlText").textContent   = saved;
