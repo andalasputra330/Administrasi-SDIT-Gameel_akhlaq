@@ -1570,6 +1570,11 @@ function openModal(mode, id) {
   }
   const v = (f) => record ? (record[f]||"") : "";
 
+  // TAMBAHAN: Buat daftar pilihan guru untuk dihubungkan ke form User
+  const pilihanGuru = state.guru.map(g => `<option value="${g.Nama}">${g.Mata_Pelajaran || ''}</option>`).join("");
+
+  const forms = {
+
   const forms = {
     guru: `
       <div class="row g-2">
@@ -1606,7 +1611,16 @@ function openModal(mode, id) {
       <div class="row g-2">
         <div class="col-6"><label class="form-label">Username</label><input id="m_username" class="form-control" value="${v("Username")}" ${isEdit?"readonly":""}/></div>
         <div class="col-6"><label class="form-label">Password ${isEdit?"(kosongkan jika tidak ganti)":""}</label><input type="password" id="m_password" class="form-control" placeholder="${isEdit?"(tidak diubah)":"wajib diisi"}"/></div>
-        <div class="col-6"><label class="form-label">Nama Lengkap</label><input id="m_namalengkap" class="form-control" value="${v("Nama_Lengkap")}"/></div>
+        
+        <!-- KOLOM NAMA LENGKAP DIUBAH MENJADI DATALIST TERHUBUNG KE GURU -->
+        <div class="col-6">
+          <label class="form-label">Nama (Pilih dari Data Guru)</label>
+          <input id="m_namalengkap" class="form-control" list="listDataGuru" value="${v("Nama_Lengkap")}" placeholder="Klik untuk pilih nama..." autocomplete="off"/>
+          <datalist id="listDataGuru">
+            ${pilihanGuru}
+          </datalist>
+        </div>
+
         <div class="col-6"><label class="form-label">Role</label><select id="m_role" class="form-select"><option ${v("Role")==="admin"?"selected":""} value="admin">Admin</option><option ${v("Role")==="guru"?"selected":""} value="guru">Guru</option></select></div>
       </div>`,
   };
