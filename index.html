@@ -1004,16 +1004,15 @@ function formatTanggal(val) {
 
 function formatJam(val) {
   if (!val) return "—";
-  // Sudah format HH:mm atau HH:mm:ss — kembalikan (potong detik)
   if (/^\d{2}:\d{2}(:\d{2})?$/.test(String(val))) return String(val).slice(0,5);
-  // ISO string atau Date serial dari Google Sheets (epoch 1899 untuk time-only)
   try {
     const d = new Date(val);
     if (isNaN(d.getTime())) return String(val);
-    const wib = new Date(d.getTime() + 7 * 60 * 60 * 1000);
-    const hh  = String(wib.getUTCHours()).padStart(2,"0");
-    const min = String(wib.getUTCMinutes()).padStart(2,"0");
-    return `${hh}:${min}`;
+    
+    // FIX: Ubah tahun menjadi tahun sekarang agar terhindar dari bug zona waktu Batavia 1899
+    d.setFullYear(new Date().getFullYear());
+    
+    return d.toLocaleTimeString("id-ID", { timeZone: "Asia/Jakarta", hour: "2-digit", minute: "2-digit" }).replace(/\./g, ":");
   } catch(e) { return String(val); }
 }
 
