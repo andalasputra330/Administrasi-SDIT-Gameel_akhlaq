@@ -2016,26 +2016,30 @@ function downloadExcel(type) {
     ];
   }
 
- const ws = XLSX.utils.aoa_to_sheet(wsData);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Rekap");
-  
-  // -- PERBAIKAN UNTUK BROWSER HP --
-  // Menggunakan Blob untuk memaksa MIME type Excel
-  const fileName = type + "_" + today.replace(/\//g,"-") + ".xlsx";
+   const fileName = type + "_" + today.replace(/\//g,"-") + ".xlsx";
   const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
   const blob = new Blob([wbout], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
   
-  // Membuat link download virtual
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = fileName;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
+  // -- PERBAIKAN KHUSUS ANDROID --
+  if (window.AndroidBlobHandler) {
+      // Jika dibuka lewat aplikasi Android, kirim data langsung
+      var reader = new FileReader();
+      reader.onloadend = function() {
+          var base64data = reader.result;
+          window.AndroidBlobHandler.saveBlob(base64data, blob.type, fileName);
+      };
+      reader.readAsDataURL(blob);
+  } else {
+      // Jika dibuka lewat browser biasa (Chrome/PC), gunakan cara lama
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function() { URL.revokeObjectURL(url); }, 100); 
+  }
 // ── INIT ──────────────────────────────────────────────────
 (function init() {
   const saved = localStorage.getItem("SDIT_SESSION");
