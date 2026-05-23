@@ -2016,38 +2016,37 @@ function downloadExcel(type) {
     ];
   }
 
-   function downloadExcel(wsData, type) { // Ini contoh nama fungsi Anda
-  const today = new Date().toLocaleDateString();
+  // --- BAGIAN YANG DIPERBAIKI (WAJIB ADA) ---
   const ws = XLSX.utils.aoa_to_sheet(wsData);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "Rekap");
-  
+  // ------------------------------------------
+
   const fileName = type + "_" + today.replace(/\//g,"-") + ".xlsx";
   const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
   const blob = new Blob([wbout], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-  
-  // GUNAKAN BLOK INI SAJA:
-  if (window.AndroidBlobHandler) {
-      try {
+
+  try {
+      if (window.AndroidBlobHandler) {
           var reader = new FileReader();
           reader.onloadend = function() {
               window.AndroidBlobHandler.saveBlob(reader.result, blob.type, fileName);
           };
           reader.readAsDataURL(blob);
-      } catch (err) {
-          console.error("Android download error:", err);
+      } else {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = fileName;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setTimeout(() => URL.revokeObjectURL(url), 1000);
       }
-  } else {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = fileName;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
+  } catch (e) {
+      console.log("Download error: " + e);
   }
-} // <--- Pastikan ada kurung penutup fungsi di sini
+} // <--- Pastikan kurung tutup fungsi ada di sini
 // ── INIT ──────────────────────────────────────────────────
 (function init() {
   const saved = localStorage.getItem("SDIT_SESSION");
