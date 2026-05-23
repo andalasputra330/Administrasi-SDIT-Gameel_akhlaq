@@ -428,30 +428,26 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
         </div>
       </div>
 
-      <!-- ── INPUT NILAI SISWA (GURU) ────────────── -->
+      <!-- ── INPUT NILAI SISWA (GURU) - MODE KOLEKTIF ────────────── -->
       <div class="page-section" id="sec-input-nilai">
         <div class="section-card">
-          <div class="section-card-title"><i class="bi bi-journal-check text-primary me-2"></i>Form Input Nilai Siswa</div>
+          <div class="section-card-title"><i class="bi bi-journal-check text-primary me-2"></i>Form Input Nilai Kelas (Kolektif)</div>
           <div class="row g-3">
-            <div class="col-md-4">
+            <div class="col-md-3">
               <label class="form-label">Tanggal</label>
               <input type="date" id="ni_tanggal" class="form-control"/>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
               <label class="form-label">Kelas</label>
-              <select id="ni_kelas" class="form-select" onchange="updateSiswaDropdown('ni_kelas', 'ni_siswa')">
+              <select id="ni_kelas" class="form-select">
                 <option value="">-- Pilih Kelas --</option>
               </select>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
               <label class="form-label">Mata Pelajaran</label>
               <select id="ni_mapel" class="form-select"><option value="">-- Pilih Mapel --</option></select>
             </div>
-            <div class="col-md-4">
-              <label class="form-label">Siswa</label>
-              <select id="ni_siswa" class="form-select"><option value="">-- Pilih Siswa (Pilih Kelas Dulu) --</option></select>
-            </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
               <label class="form-label">Jenis Penilaian</label>
               <select id="ni_jenis" class="form-select">
                 <option value="Tugas">Tugas</option>
@@ -461,20 +457,41 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
                 <option value="Praktek">Praktek</option>
               </select>
             </div>
-            <div class="col-md-4">
-              <label class="form-label">Nilai (0-100)</label>
-              <input type="number" id="ni_nilai" class="form-control" min="0" max="100" placeholder="Contoh: 85"/>
-            </div>
-            <div class="col-12">
-              <label class="form-label">Catatan</label>
-              <textarea id="ni_catatan" class="form-control" rows="2" placeholder="Catatan opsional..."></textarea>
-            </div>
             <div class="col-12 text-end">
               <button class="btn btn-secondary me-2" onclick="resetForm('ni')">Reset</button>
-              <button class="btn-orange" onclick="submitNilai()">
-                <i class="bi bi-cloud-upload me-1"></i>Simpan Nilai
+              <button class="btn-orange" onclick="tampilkanSiswaBulk()">
+                <i class="bi bi-list-check me-1"></i>Tampilkan Daftar Siswa
               </button>
             </div>
+          </div>
+        </div>
+
+        <!-- Tabel Form Input Massal (Awalnya Disembunyikan) -->
+        <div class="section-card" id="cardBulkInput" style="display:none; border: 2px solid var(--orange-light);">
+          <div class="section-card-title mb-2">Input Nilai Siswa</div>
+          <div class="alert alert-info py-2" style="font-size: 0.8rem;">
+            <i class="bi bi-info-circle me-1"></i> Kosongkan kolom nilai jika siswa tidak mengikuti ujian/tugas.
+          </div>
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle" style="font-size: 0.85rem;">
+              <thead style="background-color: #f8f9fa;">
+                <tr>
+                  <th class="text-center" style="width: 5%">No</th>
+                  <th style="width: 20%">NISN</th>
+                  <th style="width: 30%">Nama Siswa</th>
+                  <th style="width: 15%">Nilai (0-100)</th>
+                  <th style="width: 30%">Catatan (Opsional)</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyBulkSiswa">
+                <!-- Baris siswa akan dimunculkan lewat JS -->
+              </tbody>
+            </table>
+          </div>
+          <div class="text-end mt-3">
+            <button class="btn-orange px-4" onclick="submitNilaiBulk()">
+              <i class="bi bi-cloud-upload me-2"></i>Simpan Semua Nilai
+            </button>
           </div>
         </div>
 
@@ -1343,67 +1360,135 @@ function setLogoElements(src) {
   document.getElementById("logoPreview").style.background = "transparent";
 }
 
-// ── UPDATE DROPDOWN SISWA DINAMIS ─────────────────────────
-function updateSiswaDropdown(kelasId, siswaId) {
-  const kelas = document.getElementById(kelasId).value;
-  const selSiswa = document.getElementById(siswaId);
-  selSiswa.innerHTML = '<option value="">-- Pilih Siswa --</option>';
-  if (!kelas) return;
-  const filtered = state.siswa.filter(s => s.Kelas === kelas);
-  filtered.forEach(s => {
-    selSiswa.innerHTML += `<option value="${s.NISN}">${s.Nama}</option>`;
-  });
-}
+// ── MENAMPILKAN DAFTAR SISWA UNTUK INPUT NILAI ────────────────
+function tampilkanSiswaBulk() {
+  const kelas = document.getElementById("ni_kelas").value;
+  const mapel = document.getElementById("ni_mapel").value;
 
-// ── SUBMIT NILAI SISWA ────────────────────────────────────
-async function submitNilai() {
-  const tanggal = document.getElementById("ni_tanggal").value;
-  const kelas   = document.getElementById("ni_kelas").value;
-  const mapel   = document.getElementById("ni_mapel").value;
-  const nisn    = document.getElementById("ni_siswa").value;
-  const jenis   = document.getElementById("ni_jenis").value;
-  const nilai   = document.getElementById("ni_nilai").value;
-  
-  if (!kelas || !mapel || !nisn || !nilai) { 
-    showAlert("warning","Data Kelas, Mapel, Siswa, dan Nilai wajib diisi."); return; 
-  }
-
-  const siswaObj = state.siswa.find(s => s.NISN === nisn);
-  const namaSiswa = siswaObj ? siswaObj.Nama : "";
-
-  const data = {
-    Tanggal:         inputDateToSheets(tanggal),
-    NISN:            nisn,
-    Nama_Siswa:      namaSiswa,
-    Kelas:           kelas,
-    Mapel:           mapel,
-    Jenis_Penilaian: jenis,
-    Nilai:           nilai,
-    Guru_Pengampu:   state.user.nama,
-    Catatan:         document.getElementById("ni_catatan").value,
-  };
-
-  if (!API_URL) {
-    data.ID_Nilai = "NL" + String(state.nilaiSiswa.length + 1).padStart(4,"0");
-    state.nilaiSiswa.push(data);
-    showAlert("success", "Data berhasil disimpan (mode demo).");
-    resetForm("ni");
-    filterNilaiGuru(); // refresh table
+  if (!kelas || !mapel) {
+    showAlert("warning", "Silakan pilih Kelas dan Mata Pelajaran terlebih dahulu.");
     return;
   }
 
-  const res = await api("addNilai", { data });
-  if (res && res.success) {
-    showAlert("success", res.message);
-    resetForm("ni");
-    const r = await api("getNilai");
-    if (r) {
-      state.nilaiSiswa = r.data;
-      filterNilaiGuru(); // refresh table
-    }
-  } else if (res) showAlert("danger", res.message);
+  // Filter siswa berdasarkan kelas
+  const siswaKelas = state.siswa.filter(s => s.Kelas === kelas);
+  const tbody = document.getElementById("tbodyBulkSiswa");
+
+  if (siswaKelas.length === 0) {
+    showAlert("info", "Tidak ada data siswa di kelas ini.");
+    document.getElementById("cardBulkInput").style.display = "none";
+    return;
+  }
+
+  // Generate tabel input untuk setiap siswa
+  tbody.innerHTML = siswaKelas.map((s, index) => `
+    <tr>
+      <td class="text-center">${index + 1}</td>
+      <td class="text-secondary">${s.NISN}</td>
+      <td class="fw-bold">${s.Nama}</td>
+      <td>
+        <input type="number" class="form-control form-control-sm bulk-nilai-input" 
+               data-nisn="${s.NISN}" data-nama="${s.Nama}" min="0" max="100" placeholder="0-100">
+      </td>
+      <td>
+        <input type="text" class="form-control form-control-sm bulk-catatan-input" 
+               id="catatan_${s.NISN}" placeholder="Opsional...">
+      </td>
+    </tr>
+  `).join("");
+
+  document.getElementById("cardBulkInput").style.display = "block";
 }
 
+// ── SUBMIT SEMUA NILAI SEKALIGUS ──────────────────────────────
+async function submitNilaiBulk() {
+  const tanggal = document.getElementById("ni_tanggal").value;
+  const kelas   = document.getElementById("ni_kelas").value;
+  const mapel   = document.getElementById("ni_mapel").value;
+  const jenis   = document.getElementById("ni_jenis").value;
+
+  const inputs = document.querySelectorAll('.bulk-nilai-input');
+  let dataToSubmit = [];
+
+  // Looping ambil data dari tabel
+  inputs.forEach(input => {
+    const nilai = input.value;
+    if (nilai !== "") { // Hanya ambil baris yang nilainya diisi
+      const nisn = input.getAttribute("data-nisn");
+      const nama = input.getAttribute("data-nama");
+      const catatan = document.getElementById("catatan_" + nisn).value;
+
+      dataToSubmit.push({
+        Tanggal: inputDateToSheets(tanggal),
+        NISN: nisn,
+        Nama_Siswa: nama,
+        Kelas: kelas,
+        Mapel: mapel,
+        Jenis_Penilaian: jenis,
+        Nilai: nilai,
+        Guru_Pengampu: state.user.nama,
+        Catatan: catatan
+      });
+    }
+  });
+
+  if (dataToSubmit.length === 0) {
+    showAlert("warning", "Belum ada nilai yang diisi. Isi minimal satu siswa.");
+    return;
+  }
+
+  // Jika Mode Demo
+  if (!API_URL) {
+    dataToSubmit.forEach(data => {
+      data.ID_Nilai = "NL" + String(state.nilaiSiswa.length + 1).padStart(4, "0");
+      state.nilaiSiswa.push(data);
+    });
+    showAlert("success", `${dataToSubmit.length} nilai berhasil disimpan (mode demo).`);
+    document.getElementById("cardBulkInput").style.display = "none";
+    filterNilaiGuru(); // Refresh tabel bawah
+    return;
+  }
+
+  // Kirim data satu per satu dengan simulasi bulk loading
+  document.getElementById("loadingOverlay").style.display = "flex";
+  let successCount = 0;
+  let failCount = 0;
+
+  for (let i = 0; i < dataToSubmit.length; i++) {
+    document.getElementById("loadingMsg").textContent = `Menyimpan data ${i + 1} dari ${dataToSubmit.length}...`;
+    
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain" },
+        body: JSON.stringify({ action: "addNilai", data: dataToSubmit[i] })
+      }).then(r => r.json());
+
+      if (res && res.success) successCount++;
+      else failCount++;
+    } catch (e) {
+      failCount++;
+    }
+  }
+
+  hideLoading();
+
+  if (failCount === 0) {
+    showAlert("success", `Berhasil menyimpan ${successCount} data nilai ke Google Sheets.`);
+    document.getElementById("cardBulkInput").style.display = "none";
+  } else {
+    showAlert("warning", `Selesai. Berhasil: ${successCount}, Gagal: ${failCount}. Coba simpan ulang untuk yang gagal.`);
+  }
+
+  // Refresh data ke tabel riwayat di bawah
+  showLoading("Memperbarui tabel riwayat...");
+  const r = await api("getNilai");
+  if (r) {
+    state.nilaiSiswa = r.data;
+    filterNilaiGuru();
+  }
+  hideLoading();
+}
 
 // ── RENDER & FILTER NILAI SISWA ───────────────────────────
 function renderNilaiTable(data, tbodyId) {
@@ -1850,9 +1935,13 @@ function resetForm(prefix) {
     jb: ["jb_materi","jb_catatan"],
     jp: ["jp_nama","jp_penyelenggara","jp_durasi","jp_catatan"],
     ps: ["ps_nisn","ps_nama_siswa","ps_kelas_siswa","ps_siswa_search","ps_nama_lomba","ps_catatan"],
-    ni: ["ni_siswa","ni_nilai","ni_catatan"]
+    ni: [] 
   };
   (fields[prefix]||[]).forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
+  
+  if (prefix === 'ni') {
+    document.getElementById("cardBulkInput").style.display = "none";
+  }
 }
 
 // ── EXPORT PDF ──────────────────────────────────────────
