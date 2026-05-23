@@ -430,16 +430,22 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
             </div>
             <div class="col-md-3">
               <label class="form-label">Jenis Penilaian</label>
-              <select id="ni_jenis" class="form-select">
+         <select id="ni_jenis" class="form-select">
   <optgroup label="Tugas">
     <option value="Tugas 1">Tugas 1</option>
     <option value="Tugas 2">Tugas 2</option>
     <option value="Tugas 3">Tugas 3</option>
+    <option value="Tugas 4">Tugas 4</option>
+    <option value="Tugas 5">Tugas 5</option>
+    <option value="Tugas 6">Tugas 6</option>
   </optgroup>
   <optgroup label="Ulangan Harian (UH)">
     <option value="UH 1">UH 1</option>
     <option value="UH 2">UH 2</option>
     <option value="UH 3">UH 3</option>
+    <option value="UH 4">UH 4</option>
+    <option value="UH 5">UH 5</option>
+    <option value="UH 6">UH 6</option>
   </optgroup>
   <optgroup label="Ujian Utama">
     <option value="UTS">UTS / PTS</option>
@@ -449,7 +455,7 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
     <option value="Praktek 1">Praktek 1</option>
     <option value="Praktek 2">Praktek 2</option>
   </optgroup>
-</select>
+</select>>
             </div>
             <div class="col-12 text-end">
               <button class="btn btn-secondary me-2" onclick="resetFormNilaiBulk()">Reset Pilihan</button>
@@ -500,6 +506,25 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
             <select id="fNiKelas_Guru" class="form-select form-select-sm" style="width:130px;" onchange="filterNilaiGuru()">
               <option value="">Semua Kelas</option>
             </select>
+            <select id="fNiJenis_Guru" class="form-select form-select-sm" style="width:140px;" onchange="filterNilaiGuru()">
+  <option value="">Semua Jenis</option>
+  <option value="Tugas 1">Tugas 1</option>
+  <option value="Tugas 2">Tugas 2</option>
+  <option value="Tugas 3">Tugas 3</option>
+  <option value="Tugas 4">Tugas 4</option>
+  <option value="Tugas 5">Tugas 5</option>
+  <option value="Tugas 6">Tugas 6</option>
+  <option value="UH 1">UH 1</option>
+  <option value="UH 2">UH 2</option>
+  <option value="UH 3">UH 3</option>
+  <option value="UH 4">UH 4</option>
+  <option value="UH 5">UH 5</option>
+  <option value="UH 6">UH 6</option>
+  <option value="UTS">UTS / PTS</option>
+  <option value="UAS">UAS / PAS</option>
+  <option value="Praktek 1">Praktek 1</option>
+  <option value="Praktek 2">Praktek 2</option>
+</select>
             <div class="ms-auto d-flex gap-2">
               <button class="btn-dl-pdf" onclick="downloadPDF('nilai-guru')">
                 <i class="bi bi-file-earmark-pdf-fill"></i>PDF
@@ -538,6 +563,25 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
             <select id="fNiMapel" class="form-select form-select-sm" style="width:160px;" onchange="filterNilaiAdmin()">
               <option value="">Semua Mapel</option>
             </select>
+            <select id="fNiJenis" class="form-select form-select-sm" style="width:140px;" onchange="filterNilaiAdmin()">
+  <option value="">Semua Jenis</option>
+  <option value="Tugas 1">Tugas 1</option>
+  <option value="Tugas 2">Tugas 2</option>
+  <option value="Tugas 3">Tugas 3</option>
+  <option value="Tugas 4">Tugas 4</option>
+  <option value="Tugas 5">Tugas 5</option>
+  <option value="Tugas 6">Tugas 6</option>
+  <option value="UH 1">UH 1</option>
+  <option value="UH 2">UH 2</option>
+  <option value="UH 3">UH 3</option>
+  <option value="UH 4">UH 4</option>
+  <option value="UH 5">UH 5</option>
+  <option value="UH 6">UH 6</option>
+  <option value="UTS">UTS / PTS</option>
+  <option value="UAS">UAS / PAS</option>
+  <option value="Praktek 1">Praktek 1</option>
+  <option value="Praktek 2">Praktek 2</option>
+</select>
             <div class="ms-auto d-flex gap-2">
               <button class="btn-dl-pdf" onclick="downloadPDF('nilai-admin')">
                 <i class="bi bi-file-earmark-pdf-fill"></i>PDF
@@ -1495,11 +1539,13 @@ function renderNilaiTable(data, tbodyId) {
 function filterNilaiGuru() {
   const bulan = document.getElementById("fNiBulan_Guru").value;
   const kelas = document.getElementById("fNiKelas_Guru").value;
-  // Guru hanya bisa melihat kelas/siswa yang pernah mereka nilai.
+  const jenis = document.getElementById("fNiJenis_Guru").value; // Filter baru
+  
   let data = state.nilaiSiswa.filter(r => r.Guru_Pengampu === state.user.nama);
   
   if (bulan) data = data.filter(r => formatTanggal(r.Tanggal).slice(3,5) === bulan);
   if (kelas) data = data.filter(r => r.Kelas === kelas);
+  if (jenis) data = data.filter(r => r.Jenis_Penilaian === jenis); // Logika filter baru
   
   renderNilaiTable(data, "tbodyNilaiGuru");
 }
@@ -1508,11 +1554,13 @@ function filterNilaiAdmin() {
   const bulan = document.getElementById("fNiBulan").value;
   const kelas = document.getElementById("fNiKelas").value;
   const mapel = document.getElementById("fNiMapel").value;
+  const jenis = document.getElementById("fNiJenis").value; // Filter baru
   
   let data = [...state.nilaiSiswa];
   if (bulan) data = data.filter(r => formatTanggal(r.Tanggal).slice(3,5) === bulan);
   if (kelas) data = data.filter(r => r.Kelas === kelas);
   if (mapel) data = data.filter(r => r.Mapel === mapel);
+  if (jenis) data = data.filter(r => r.Jenis_Penilaian === jenis); // Logika filter baru
   
   renderNilaiTable(data, "tbodyNilaiAdmin");
 }
