@@ -2016,21 +2016,28 @@ function downloadExcel(type) {
     ];
   }
 
-   const fileName = type + "_" + today.replace(/\//g,"-") + ".xlsx";
+   function downloadExcel(wsData, type) { // Ini contoh nama fungsi Anda
+  const today = new Date().toLocaleDateString();
+  const ws = XLSX.utils.aoa_to_sheet(wsData);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Rekap");
+  
+  const fileName = type + "_" + today.replace(/\//g,"-") + ".xlsx";
   const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
   const blob = new Blob([wbout], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
   
-  // -- PERBAIKAN KHUSUS ANDROID --
+  // GUNAKAN BLOK INI SAJA:
   if (window.AndroidBlobHandler) {
-      // Jika dibuka lewat aplikasi Android, kirim data langsung
-      var reader = new FileReader();
-      reader.onloadend = function() {
-          var base64data = reader.result;
-          window.AndroidBlobHandler.saveBlob(base64data, blob.type, fileName);
-      };
-      reader.readAsDataURL(blob);
+      try {
+          var reader = new FileReader();
+          reader.onloadend = function() {
+              window.AndroidBlobHandler.saveBlob(reader.result, blob.type, fileName);
+          };
+          reader.readAsDataURL(blob);
+      } catch (err) {
+          console.error("Android download error:", err);
+      }
   } else {
-      // Jika dibuka lewat browser biasa (Chrome/PC), gunakan cara lama
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -2038,8 +2045,9 @@ function downloadExcel(type) {
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      setTimeout(function() { URL.revokeObjectURL(url); }, 100); 
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
+} // <--- Pastikan ada kurung penutup fungsi di sini
 // ── INIT ──────────────────────────────────────────────────
 (function init() {
   const saved = localStorage.getItem("SDIT_SESSION");
