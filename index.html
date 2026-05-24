@@ -52,8 +52,12 @@ h1, h2, h3, h4, h5, h6, .fw-bold { font-weight: 600 !important; color: var(--tex
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* ─── LOGIN & SETUP ──────────────────────────────────────── */
-#pageLogin, #pageSetup {
+#pageLogin {
   min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #dcfce7 0%, #f5f7fb 100%);
+}
+#pageSetup {
+  min-height: 100vh; display: none; align-items: center; justify-content: center;
   background: linear-gradient(135deg, #dcfce7 0%, #f5f7fb 100%);
 }
 .login-card, .setup-card { 
@@ -1092,6 +1096,7 @@ let API_URL = "https://script.google.com/macros/s/AKfycbxsH2u6Z8zc8-aFHT4yucjRVc
 // ── HALAMAN SETUP URL API ─────────────────────────────────
 function showSetupPage() {
   document.getElementById("pageLogin").style.display  = "none";
+  document.getElementById("appShell").style.display  = "none"; // PENGAMAN
   document.getElementById("pageSetup").style.display  = "flex";
   if (API_URL) {
     document.getElementById("existingUrlInfo").style.display = "block";
@@ -1288,6 +1293,7 @@ function enterApp(userInfo) {
   state.user = userInfo;
   localStorage.setItem("SDIT_SESSION", JSON.stringify(userInfo));
   document.getElementById("pageLogin").style.display = "none";
+  document.getElementById("pageSetup").style.display = "none"; // PENGAMAN
   document.getElementById("appShell").style.display  = "block";
   applyUserUI();
   loadMasterData();
@@ -1309,6 +1315,7 @@ function doLogout() {
   localStorage.removeItem("SDIT_SESSION");
   state = { user:null,config:{},kelas:[],mapel:[],guru:[],siswa:[],users:[],jurnalBelajar:[],jurnalPelatihan:[],prestasi:[],nilaiSiswa:[],crudMode:null,editId:null };
   document.getElementById("appShell").style.display  = "none";
+  document.getElementById("pageSetup").style.display = "none"; // PENGAMAN
   document.getElementById("pageLogin").style.display = "flex";
   document.getElementById("loginError").classList.add("d-none");
   document.getElementById("inpUsername").value = "";
