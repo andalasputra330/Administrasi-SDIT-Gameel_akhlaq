@@ -47,8 +47,13 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg-body
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* ─── LOGIN & SETUP ──────────────────────────────── */
-#pageLogin, #pageSetup {
+#pageLogin {
   min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+}
+
+#pageSetup {
+  min-height: 100vh; display: none; align-items: center; justify-content: center;
   background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
 }
 .login-card, .setup-card { 
