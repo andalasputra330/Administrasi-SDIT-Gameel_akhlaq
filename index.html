@@ -200,13 +200,29 @@ h1, h2, h3, h4, h5, h6, .fw-bold { font-weight: 600 !important; color: var(--tex
 .btn-dl-pdf i, .btn-dl-xls i { margin-right: 6px; }
 
 /* ─── TABLE MODERN ───────────────────────────────── */
-.table-responsive { border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; background: #fff; }
-.table { margin-bottom: 0; font-size: 0.88rem; }
+.table-responsive { 
+  border-radius: 16px; 
+  border: 1px solid #e2e8f0; 
+  overflow-x: auto; /* KUNCI: Mengizinkan scroll ke samping */
+  -webkit-overflow-scrolling: touch; /* Scroll lebih halus di layar sentuh HP */
+  background: #fff; 
+}
+.table { 
+  margin-bottom: 0; 
+  font-size: 0.88rem; 
+  white-space: nowrap; /* Mencegah teks terlipat ke bawah sehingga memicu scrollbar */
+}
 .table thead th { 
   background: var(--light-green); color: var(--primary-green); border-bottom: none; 
   padding: 16px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
 }
-.table tbody td { padding: 16px; border-bottom: 1px solid #f1f5f9; color: var(--text-main); vertical-align: middle; }
+.table tbody td { 
+  padding: 16px; border-bottom: 1px solid #f1f5f9; color: var(--text-main); vertical-align: middle; 
+}
+/* Khusus kolom catatan (atau kolom yang panjang) biarkan teks membungkus secara normal */
+.table tbody td[style*="max-width"] {
+  white-space: normal;
+}
 .table tbody tr { transition: all 0.2s ease; }
 .table tbody tr:hover { background-color: #f0fdf4 !important; }
 .table-bordered > :not(caption) > * > * { border-color: #f1f5f9; }
