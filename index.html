@@ -11,164 +11,199 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <style>
-/* ─── VARIABEL WARNA ─────────────────────────────── */
+/* ─── VARIABEL WARNA (Tema Hijau & Orange Elegan) ─── */
 :root {
-  --orange:       #E8650A;
-  --orange-d:     #C4530A;
-  --orange-light: #FFF3EC;
-  --orange-mid:   #F97316;
-  --sidebar-bg:   #1a1a2e;
-  --sidebar-text: #c8c9d0;
-  --sidebar-act:  rgba(232,101,10,.18);
+  --hijau:        #059669; /* Emerald Green - Elegan & Profesional */
+  --hijau-d:      #047857; /* Hijau Gelap */
+  --hijau-l:      #D1FAE5; /* Hijau Terang / Soft */
+  --hijau-light:  #ECFDF5;
+  
+  --orange:       #F97316; /* Warm Orange - Aksen Modern */
+  --orange-d:     #EA580C;
+  --orange-l:     #FFF7ED;
+
+  --sidebar-bg:   #022C22; /* Hijau Sangat Gelap Premium untuk Sidebar */
+  --sidebar-text: #A7F3D0;
+  --sidebar-act:  rgba(5, 150, 105, 0.25);
+  
+  --bg-body:      #F8FAFC;
+  --border-soft:  #E2E8F0;
 }
 
 /* ─── GLOBAL ─────────────────────────────────────── */
 * { box-sizing: border-box; }
-body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100vh; }
+body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg-body); min-height: 100vh; }
 
 /* ─── LOADING OVERLAY ─────────────────────────────── */
 #loadingOverlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,.45);
+  position: fixed; inset: 0; background: rgba(2, 44, 34, 0.6);
   z-index: 9999; display: flex; flex-direction: column;
   align-items: center; justify-content: center; display: none;
+  backdrop-filter: blur(4px);
 }
-#loadingOverlay .spinner { width: 48px; height: 48px; border: 5px solid #fff3;
-  border-top-color: var(--orange); border-radius: 50%; animation: spin .8s linear infinite; }
-#loadingOverlay p { color: #fff; margin-top: 12px; font-size: 14px; }
+#loadingOverlay .spinner { width: 48px; height: 48px; border: 5px solid rgba(255,255,255,0.2);
+  border-top-color: var(--hijau); border-radius: 50%; animation: spin .8s linear infinite; }
+#loadingOverlay p { color: #fff; margin-top: 12px; font-size: 14px; font-weight: 500; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ─── LOGIN ──────────────────────────────────────── */
-#pageLogin {
+/* ─── LOGIN & SETUP ──────────────────────────────── */
+#pageLogin, #pageSetup {
   min-height: 100vh; display: flex; align-items: center; justify-content: center;
-  background: linear-gradient(135deg, #fff3ec 0%, #fde9d9 100%);
+  background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
 }
-.login-card { background: #fff; border-radius: 16px; padding: 40px 36px;
-  box-shadow: 0 8px 32px rgba(232,101,10,.12); width: 100%; max-width: 380px; }
+.login-card, .setup-card { 
+  background: #fff; border-radius: 20px; padding: 40px 36px;
+  box-shadow: 0 10px 40px rgba(5, 150, 105, 0.08); 
+  border: 1px solid #ffffff; width: 100%; max-width: 380px; 
+}
+#pageSetup .setup-card { max-width: 520px; padding: 36px 32px; }
+
 .logo-circle { width: 72px; height: 72px; border-radius: 50%;
-  background: var(--orange); display: flex; align-items: center;
-  justify-content: center; margin: 0 auto 12px; }
+  background: var(--hijau); display: flex; align-items: center;
+  justify-content: center; margin: 0 auto 16px; 
+  box-shadow: 0 8px 16px rgba(5, 150, 105, 0.2); }
 .logo-circle img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
 .logo-circle i { font-size: 36px; color: #fff; }
-.login-title { text-align: center; font-size: 1.15rem; font-weight: 700; color: #333; }
-.login-sub   { text-align: center; font-size: .82rem; color: #888; margin-bottom: 24px; }
-.btn-login { background: var(--orange); color: #fff; border: none;
-  padding: 10px; width: 100%; border-radius: 8px; font-weight: 600;
-  font-size: 1rem; transition: background .2s; }
-.btn-login:hover { background: var(--orange-d); color: #fff; }
+
+.login-title { text-align: center; font-size: 1.25rem; font-weight: 700; color: #1E293B; }
+.login-sub   { text-align: center; font-size: .85rem; color: #64748B; margin-bottom: 24px; }
+
+.btn-login, .btn-orange { 
+  background: var(--orange); color: #fff; border: none;
+  padding: 10px 20px; width: 100%; border-radius: 10px; font-weight: 600;
+  font-size: 1rem; transition: all .2s ease; 
+}
+.btn-orange { width: auto; font-size: .85rem; }
+.btn-login:hover, .btn-orange:hover { 
+  background: var(--orange-d); color: #fff; 
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.25); transform: translateY(-1px);
+}
 
 /* ─── APP SHELL ──────────────────────────────────── */
 #appShell { display: none; min-height: 100vh; }
 
 /* ─── SIDEBAR ─────────────────────────────────────── */
 .sidebar {
-  width: 230px; min-height: 100vh; background: var(--sidebar-bg);
+  width: 240px; min-height: 100vh; background: var(--sidebar-bg);
   position: fixed; top: 0; left: 0; z-index: 100;
   display: flex; flex-direction: column; transition: transform .3s;
+  box-shadow: 4px 0 24px rgba(0,0,0,0.05);
 }
-.sidebar-brand { display: flex; align-items: center; gap: 10px;
-  padding: 18px 16px; border-bottom: 1px solid rgba(255,255,255,.07); }
-.sidebar-brand .brand-logo { width: 36px; height: 36px; border-radius: 50%;
-  background: var(--orange); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.sidebar-brand .brand-logo img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
-.sidebar-brand .brand-logo i  { font-size: 18px; color: #fff; }
-.brand-name { font-size: .78rem; font-weight: 700; color: #fff; line-height: 1.3; }
-.brand-sub  { font-size: .68rem; color: var(--sidebar-text); }
-.nav-section { font-size: .62rem; text-transform: uppercase; letter-spacing: .08em;
-  color: #555; padding: 14px 16px 4px; }
-.nav-link-item { display: flex; align-items: center; gap: 10px;
-  padding: 9px 16px; font-size: .82rem; color: var(--sidebar-text);
-  border-radius: 8px; margin: 2px 8px; cursor: pointer; transition: all .15s; text-decoration: none; }
-.nav-link-item i { font-size: 1.05rem; }
-.nav-link-item:hover { background: var(--sidebar-act); color: var(--orange-mid); }
-.nav-link-item.active { background: var(--sidebar-act); color: var(--orange-mid); font-weight: 600; }
-.sidebar-bottom { margin-top: auto; padding: 12px 8px;
-  border-top: 1px solid rgba(255,255,255,.07); }
+.sidebar-brand { display: flex; align-items: center; gap: 12px;
+  padding: 20px 18px; border-bottom: 1px solid rgba(255,255,255,.05); }
+.sidebar-brand .brand-logo { width: 40px; height: 40px; border-radius: 50%;
+  background: var(--hijau); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.sidebar-brand .brand-logo img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
+.sidebar-brand .brand-logo i  { font-size: 20px; color: #fff; }
+.brand-name { font-size: .85rem; font-weight: 700; color: #fff; line-height: 1.2; }
+.brand-sub  { font-size: .7rem; color: var(--sidebar-text); margin-top: 2px; }
+
+.nav-section { font-size: .65rem; text-transform: uppercase; letter-spacing: .08em;
+  color: #34D399; padding: 18px 18px 6px; font-weight: 600; }
+.nav-link-item { display: flex; align-items: center; gap: 12px;
+  padding: 10px 18px; font-size: .85rem; color: var(--sidebar-text);
+  border-radius: 10px; margin: 4px 12px; cursor: pointer; transition: all .2s; text-decoration: none; }
+.nav-link-item i { font-size: 1.1rem; }
+.nav-link-item:hover { background: var(--sidebar-act); color: #fff; }
+.nav-link-item.active { 
+  background: var(--sidebar-act); color: var(--orange); 
+  font-weight: 600; border-left: 4px solid var(--orange); padding-left: 14px;
+}
+.sidebar-bottom { margin-top: auto; padding: 16px 12px;
+  border-top: 1px solid rgba(255,255,255,.05); }
 
 /* ─── TOPBAR ─────────────────────────────────────── */
-.topbar { height: 56px; background: #fff; border-bottom: 1px solid #eee;
-  display: flex; align-items: center; padding: 0 20px;
-  position: sticky; top: 0; z-index: 50; gap: 10px; }
-.topbar-title { font-size: 1rem; font-weight: 700; color: #333; flex: 1; }
-.user-chip { display: flex; align-items: center; gap: 8px;
-  font-size: .82rem; color: #555; }
-.user-avatar { width: 32px; height: 32px; border-radius: 50%;
-  background: var(--orange); color: #fff; font-size: .72rem; font-weight: 700;
+.topbar { height: 64px; background: #fff; border-bottom: 1px solid var(--border-soft);
+  display: flex; align-items: center; padding: 0 24px;
+  position: sticky; top: 0; z-index: 50; gap: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+.topbar-title { font-size: 1.1rem; font-weight: 700; color: #1E293B; flex: 1; }
+.user-chip { display: flex; align-items: center; gap: 10px;
+  font-size: .85rem; color: #475569; font-weight: 500; }
+.user-avatar { width: 36px; height: 36px; border-radius: 50%;
+  background: var(--hijau); color: #fff; font-size: .8rem; font-weight: 700;
   display: flex; align-items: center; justify-content: center; }
 
 /* ─── MAIN AREA ──────────────────────────────────── */
-.main-area { margin-left: 230px; transition: margin .3s; }
-.page-content { padding: 20px; }
+.main-area { margin-left: 240px; transition: margin .3s; }
+.page-content { padding: 24px; }
 .page-section { display: none; }
-.page-section.active { display: block; }
+.page-section.active { display: block; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
 /* ─── CARDS ──────────────────────────────────────── */
-.card-stat { border: none; border-radius: 12px; background: #fff;
-  box-shadow: 0 2px 8px rgba(0,0,0,.06); }
-.stat-val { font-size: 1.8rem; font-weight: 700; color: var(--orange); }
-.stat-label { font-size: .78rem; color: #888; }
-.section-card { background: #fff; border-radius: 12px; padding: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,.05); margin-bottom: 20px; }
-.section-card-title { font-size: .92rem; font-weight: 700; color: #333; margin-bottom: 16px; }
+.card-stat { border: 1px solid var(--border-soft); border-radius: 16px; background: #fff;
+  box-shadow: 0 4px 15px rgba(0,0,0,.02); transition: transform 0.2s; }
+.card-stat:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.04); }
+.stat-val { font-size: 2rem; font-weight: 800; color: var(--hijau); line-height: 1.2; margin-top: 4px; }
+.stat-label { font-size: .8rem; color: #64748B; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.section-card { background: #fff; border-radius: 16px; padding: 24px;
+  box-shadow: 0 4px 15px rgba(0,0,0,.02); border: 1px solid var(--border-soft); margin-bottom: 24px; }
+.section-card-title { font-size: 1rem; font-weight: 700; color: #1E293B; margin-bottom: 20px; display: flex; align-items: center; }
+.section-card-title i { color: var(--hijau) !important; font-size: 1.2rem; }
 
 /* ─── FORM ───────────────────────────────────────── */
-.form-label { font-size: .8rem; font-weight: 600; color: #555; }
-.form-control, .form-select { font-size: .85rem; }
-.badge-auto { font-size: .65rem; background: #FFF3EC; color: var(--orange);
-  padding: 2px 6px; border-radius: 4px; font-weight: 600; margin-left: 4px; }
-.btn-orange { background: var(--orange); color: #fff; border: none; border-radius: 8px;
-  padding: 8px 20px; font-size: .85rem; font-weight: 600; transition: background .2s; }
-.btn-orange:hover { background: var(--orange-d); color: #fff; }
+.form-label { font-size: .85rem; font-weight: 600; color: #475569; margin-bottom: 6px; }
+.form-control, .form-select { 
+  font-size: .85rem; border-radius: 8px; border: 1px solid var(--border-soft); 
+  padding: 8px 12px; background: #F8FAFC; transition: all 0.2s; 
+}
+.form-control:focus, .form-select:focus { 
+  border-color: var(--hijau); background: #fff;
+  box-shadow: 0 0 0 3px var(--hijau-l); outline: none; 
+}
+.badge-auto { font-size: .65rem; background: var(--orange-l); color: var(--orange-d);
+  padding: 3px 8px; border-radius: 6px; font-weight: 600; margin-left: 6px; }
 
 /* ─── FILTER BAR ─────────────────────────────────── */
-.filter-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 14px; }
-.filter-bar select { font-size: .8rem; }
-.btn-dl-pdf { background: #FCEBEB; color: #A32D2D; border: 1px solid #F09595;
-  border-radius: 7px; padding: 5px 12px; font-size: .78rem; font-weight: 600; cursor: pointer; }
-.btn-dl-xls { background: #EAF3DE; color: #3B6D11; border: 1px solid #97C459;
-  border-radius: 7px; padding: 5px 12px; font-size: .78rem; font-weight: 600; cursor: pointer; }
-.btn-dl-pdf i, .btn-dl-xls i { margin-right: 4px; }
+.filter-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 18px; }
+.filter-bar select { font-size: .85rem; font-weight: 500; }
+.btn-dl-pdf { background: #FEF2F2; color: #DC2626; border: 1px solid #FCA5A5;
+  border-radius: 8px; padding: 6px 14px; font-size: .8rem; font-weight: 600; cursor: pointer; transition: 0.2s; }
+.btn-dl-pdf:hover { background: #FEE2E2; }
+.btn-dl-xls { background: #F0FDF4; color: #16A34A; border: 1px solid #86EFAC;
+  border-radius: 8px; padding: 6px 14px; font-size: .8rem; font-weight: 600; cursor: pointer; transition: 0.2s; }
+.btn-dl-xls:hover { background: #DCFCE7; }
+.btn-dl-pdf i, .btn-dl-xls i { margin-right: 6px; }
 
 /* ─── TABLE ──────────────────────────────────────── */
-.table { font-size: .8rem; }
-.table thead th { background: #f8f9fa; font-size: .72rem; text-transform: uppercase;
-  letter-spacing: .04em; color: #888; font-weight: 700; }
-.badge-pengampu { background: #EAF3DE; color: #3B6D11; }
-.badge-inval    { background: #FAEEDA; color: #854F0B; }
-.badge-admin    { background: #FFF3EC; color: #E8650A; }
-.badge-guru     { background: #EAF3DE; color: #3B6D11; }
-.action-btn { padding: 3px 7px; font-size: .75rem; }
+.table { font-size: .85rem; color: #334155; }
+.table thead th { background: #F1F5F9; font-size: .75rem; text-transform: uppercase;
+  letter-spacing: .05em; color: #64748B; font-weight: 700; border-bottom: none; padding: 12px; }
+.table tbody td { padding: 12px; border-bottom: 1px solid var(--border-soft); vertical-align: middle; }
+.badge-pengampu { background: var(--hijau-l); color: var(--hijau-d); padding: 4px 8px; border-radius: 6px; font-weight: 600; }
+.badge-inval    { background: var(--orange-l); color: var(--orange-d); padding: 4px 8px; border-radius: 6px; font-weight: 600; }
+.badge-admin    { background: var(--hijau-l); color: var(--hijau-d); padding: 4px 8px; border-radius: 6px; font-weight: 600; }
+.badge-guru     { background: #F1F5F9; color: #475569; padding: 4px 8px; border-radius: 6px; font-weight: 600; }
+.action-btn { padding: 4px 8px; font-size: .8rem; border-radius: 6px; }
 
-/* ─── HAMBURGER (mobile) ─────────────────────────── */
-.hamburger { display: none; background: none; border: none;
-  font-size: 1.5rem; color: #333; cursor: pointer; margin-right: 8px; }
-.sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 99; }
+/* ─── SETUP & LAINNYA ────────────────────────────── */
+.setup-step { display: flex; gap: 14px; align-items: flex-start;
+  background: #F8FAFC; border: 1px solid var(--border-soft); border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+.setup-step-num { width: 28px; height: 28px; border-radius: 50%;
+  background: var(--hijau); color: #fff; font-size: .85rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.setup-step-text { font-size: .85rem; color: #475569; line-height: 1.5; }
+.setup-step-text b { color: #1E293B; }
+.setup-step-text code { background: var(--hijau-light); color: var(--hijau-d);
+  padding: 2px 6px; border-radius: 4px; font-size: .8rem; font-weight: 600; }
+.url-status { font-size: .8rem; margin-top: 8px; padding: 8px 12px; border-radius: 8px; font-weight: 500; }
+.url-status.ok  { background: var(--hijau-l); color: var(--hijau-d); border: 1px solid #A7F3D0; }
+.url-status.err { background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; }
 
-/* ─── HALAMAN SETUP API URL ──────────────────────── */
-#pageSetup {
-  min-height: 100vh; display: none; align-items: center; justify-content: center;
-  background: linear-gradient(135deg, #fff3ec 0%, #fde9d9 100%);
-}
-.setup-card { background: #fff; border-radius: 16px; padding: 36px 32px;
-  box-shadow: 0 8px 32px rgba(232,101,10,.14); width: 100%; max-width: 520px; }
-.setup-step { display: flex; gap: 12px; align-items: flex-start;
-  background: #f8f9fa; border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; }
-.setup-step-num { width: 26px; height: 26px; border-radius: 50%;
-  background: var(--orange); color: #fff; font-size: .78rem; font-weight: 700;
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
-.setup-step-text { font-size: .82rem; color: #444; line-height: 1.5; }
-.setup-step-text b { color: #222; }
-.setup-step-text code { background: #FFF3EC; color: var(--orange);
-  padding: 1px 5px; border-radius: 4px; font-size: .8rem; }
-.url-status { font-size: .78rem; margin-top: 6px; padding: 6px 10px; border-radius: 6px; }
-.url-status.ok  { background: #EAF3DE; color: #3B6D11; }
-.url-status.err { background: #FCEBEB; color: #A32D2D; }
-
-/* ─── MODAL ──────────────────────────────────────── */
-.modal-title { font-size: .95rem; font-weight: 700; }
+.modal-content { border-radius: 16px; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+.modal-header { border-bottom: 1px solid var(--border-soft); padding: 16px 24px; }
+.modal-body { padding: 24px; }
+.modal-footer { border-top: 1px solid var(--border-soft); padding: 16px 24px; }
+.modal-title { font-size: 1.05rem; font-weight: 700; color: #1E293B; }
 
 /* ─── RESPONSIVE ─────────────────────────────────── */
+.hamburger { display: none; background: none; border: none;
+  font-size: 1.5rem; color: #1E293B; cursor: pointer; margin-right: 12px; }
+.sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.5); z-index: 99; backdrop-filter: blur(2px); }
+
 @media (max-width: 768px) {
-  .sidebar { transform: translateX(-100%); }
+  .sidebar { transform: translateX(-100%); width: 260px; }
   .sidebar.open { transform: translateX(0); }
   .sidebar-overlay.show { display: block; }
   .main-area { margin-left: 0 !important; }
@@ -186,11 +221,11 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
 
 <div id="pageSetup">
   <div class="setup-card">
-    <div class="logo-circle" style="width:60px;height:60px;margin:0 auto 14px;">
-      <i class="bi bi-gear-fill" style="font-size:28px;color:#fff;"></i>
+    <div class="logo-circle" style="width:64px;height:64px;margin:0 auto 16px;">
+      <i class="bi bi-gear-fill" style="font-size:30px;color:#fff;"></i>
     </div>
     <div class="login-title">Pengaturan Awal</div>
-    <div class="login-sub" style="margin-bottom:20px;">
+    <div class="login-sub" style="margin-bottom:24px;">
       Hubungkan aplikasi ke Google Sheets Anda
     </div>
 
@@ -216,12 +251,12 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
       </div>
     </div>
 
-    <div class="mt-3 mb-2">
+    <div class="mt-4 mb-3">
       <label class="form-label" style="font-weight:700;">URL Google Apps Script</label>
       <div class="input-group">
         <input type="url" id="inpApiUrl" class="form-control"
           placeholder="https://script.google.com/macros/s/.../exec"
-          style="font-size:.82rem;"/>
+          style="font-size:.85rem;"/>
         <button class="btn btn-outline-secondary" type="button" onclick="testApiUrl()"
           title="Test koneksi" id="btnTestUrl">
           <i class="bi bi-wifi"></i>
@@ -235,16 +270,16 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
     </button>
 
     <div class="text-center mt-3">
-      <a href="#" onclick="skipSetup()" style="font-size:.78rem;color:#aaa;">
+      <a href="#" onclick="skipSetup()" style="font-size:.8rem;color:#94A3B8;text-decoration:none;">
         Lewati — gunakan mode demo (data tidak tersimpan ke Sheets)
       </a>
     </div>
 
-    <div id="existingUrlInfo" style="display:none;margin-top:16px;padding:10px 12px;
-      background:#FFF3EC;border-radius:8px;font-size:.78rem;color:#555;">
-      <i class="bi bi-info-circle me-1" style="color:var(--orange);"></i>
-      URL tersimpan sebelumnya: <span id="existingUrlText" style="color:var(--orange);word-break:break-all;"></span><br>
-      <a href="#" onclick="clearApiUrl()" style="color:#A32D2D;font-size:.75rem;">
+    <div id="existingUrlInfo" style="display:none;margin-top:20px;padding:12px 14px;
+      background:var(--hijau-light);border-radius:10px;font-size:.8rem;color:var(--hijau-d); border: 1px solid var(--hijau-l);">
+      <i class="bi bi-info-circle me-1"></i>
+      URL tersimpan sebelumnya: <br><span id="existingUrlText" style="font-weight:600;word-break:break-all;"></span><br>
+      <a href="#" onclick="clearApiUrl()" style="color:#DC2626;font-size:.75rem; display:inline-block; margin-top:8px; text-decoration:none;">
         <i class="bi bi-trash me-1"></i>Hapus & ganti URL
       </a>
     </div>
@@ -258,12 +293,12 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
     </div>
     <div class="login-title" id="loginSchoolName">SDIT Gameel Akhlaq</div>
     <div class="login-sub">Sistem Administrasi Sekolah</div>
-    <div id="loginError" class="alert alert-danger py-2 d-none" style="font-size:.82rem;"></div>
+    <div id="loginError" class="alert alert-danger py-2 d-none" style="font-size:.85rem; border-radius:8px;"></div>
     <div class="mb-3">
       <label class="form-label">Username</label>
       <input type="text" id="inpUsername" class="form-control" placeholder="admin / guru1" autocomplete="username"/>
     </div>
-    <div class="mb-3">
+    <div class="mb-4">
       <label class="form-label">Password</label>
       <input type="password" id="inpPassword" class="form-control" placeholder="pass123" autocomplete="current-password"/>
     </div>
@@ -271,10 +306,10 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
       <i class="bi bi-box-arrow-in-right me-2"></i>Masuk
     </button>
 
-    <div id="apiStatusBar" style="margin-top:12px;padding:7px 12px;border-radius:8px;font-size:.75rem;text-align:center;"></div>
+    <div id="apiStatusBar" style="margin-top:16px;padding:10px;border-radius:10px;font-size:.75rem;font-weight:600;text-align:center;"></div>
     
-    <div class="text-center mt-2" style="display: none;">
-      <a href="#" onclick="showSetupPage()" style="font-size:.76rem;color:var(--orange);text-decoration:none;">
+    <div class="text-center mt-3" style="display: none;">
+      <a href="#" onclick="showSetupPage()" style="font-size:.8rem;color:var(--orange);text-decoration:none;">
         <i class="bi bi-gear me-1"></i>Pengaturan URL Google Apps Script
       </a>
     </div>
@@ -350,7 +385,7 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
 
       <div class="page-section" id="sec-jurnal-belajar">
         <div class="section-card">
-          <div class="section-card-title"><i class="bi bi-journal-text text-warning me-2"></i>Input Jurnal Pembelajaran</div>
+          <div class="section-card-title"><i class="bi bi-journal-text me-2"></i>Input Jurnal Pembelajaran</div>
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label">Tanggal</label>
@@ -399,8 +434,8 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
               <label class="form-label">Catatan</label>
               <textarea id="jb_catatan" class="form-control" rows="2" placeholder="Catatan tambahan (opsional)"></textarea>
             </div>
-            <div class="col-12 text-end">
-              <button class="btn btn-secondary me-2" onclick="resetForm('jb')">Reset</button>
+            <div class="col-12 text-end mt-4">
+              <button class="btn btn-light me-2 fw-semibold border" onclick="resetForm('jb')">Reset</button>
               <button class="btn-orange" onclick="submitJurnalBelajar()">
                 <i class="bi bi-cloud-upload me-1"></i>Simpan ke Sheets
               </button>
@@ -411,7 +446,7 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
 
       <div class="page-section" id="sec-input-nilai">
         <div class="section-card">
-          <div class="section-card-title"><i class="bi bi-journal-check text-primary me-2"></i>Input Nilai Siswa (Kolektif)</div>
+          <div class="section-card-title"><i class="bi bi-journal-check me-2"></i>Input Nilai Siswa (Kolektif)</div>
           
           <div class="row g-3">
             <div class="col-md-3">
@@ -457,18 +492,18 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
   </optgroup>
 </select>>
             </div>
-            <div class="col-12 text-end">
-              <button class="btn btn-secondary me-2" onclick="resetFormNilaiBulk()">Reset Pilihan</button>
-              <button class="btn btn-primary" onclick="tampilkanDaftarSiswaNilai()">
+            <div class="col-12 text-end mt-4">
+              <button class="btn btn-light border fw-semibold me-2" onclick="resetFormNilaiBulk()">Reset Pilihan</button>
+              <button class="btn btn-outline-success fw-semibold" style="background:var(--hijau);color:white;border-color:var(--hijau);" onclick="tampilkanDaftarSiswaNilai()">
                 <i class="bi bi-list-check me-1"></i>Tampilkan Daftar Siswa
               </button>
             </div>
           </div>
 
-          <div id="container-bulk-nilai" style="display:none; margin-top:25px; border-top: 1px solid #eee; padding-top: 20px;">
+          <div id="container-bulk-nilai" style="display:none; margin-top:30px; border-top: 1px solid var(--border-soft); padding-top: 24px;">
              <h6 class="mb-3 fw-bold text-secondary">Daftar Siswa untuk Input Nilai</h6>
              <div class="table-responsive">
-               <table class="table table-bordered align-middle table-hover">
+               <table class="table align-middle table-hover border">
                  <thead class="table-light">
                    <tr>
                      <th class="text-center" width="5%">No</th>
@@ -482,11 +517,11 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
                      </tbody>
                </table>
              </div>
-             <div class="alert alert-info py-2" style="font-size: 0.8rem;">
+             <div class="alert alert-info py-2 mt-2" style="font-size: 0.85rem; background: var(--hijau-light); color: var(--hijau-d); border-color: var(--hijau-l);">
                <i class="bi bi-info-circle me-1"></i> Siswa yang kolom nilainya dikosongkan <b>tidak akan</b> disimpan.
              </div>
-             <div class="text-end mt-3">
-                <button class="btn-orange btn-lg w-100" onclick="submitNilaiBulk()" id="btnSubmitNilaiBulk">
+             <div class="text-end mt-4">
+                <button class="btn-orange btn-lg w-100 py-3" onclick="submitNilaiBulk()" id="btnSubmitNilaiBulk" style="font-size:1.05rem;">
                   <i class="bi bi-cloud-upload me-2"></i>Simpan Semua Nilai
                 </button>
              </div>
@@ -496,17 +531,17 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
         <div class="section-card">
           <div class="section-card-title">Riwayat Input Nilai (Hanya Kelas/Siswa yang dinilai)</div>
           <div class="filter-bar">
-            <select id="fNiBulan_Guru" class="form-select form-select-sm" style="width:120px;" onchange="filterNilaiGuru()">
+            <select id="fNiBulan_Guru" class="form-select form-select-sm" style="width:130px;" onchange="filterNilaiGuru()">
               <option value="">Semua Bulan</option>
               <option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option>
               <option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option>
               <option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option>
               <option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option>
             </select>
-            <select id="fNiKelas_Guru" class="form-select form-select-sm" style="width:130px;" onchange="filterNilaiGuru()">
+            <select id="fNiKelas_Guru" class="form-select form-select-sm" style="width:140px;" onchange="filterNilaiGuru()">
               <option value="">Semua Kelas</option>
             </select>
-            <select id="fNiJenis_Guru" class="form-select form-select-sm" style="width:140px;" onchange="filterNilaiGuru()">
+            <select id="fNiJenis_Guru" class="form-select form-select-sm" style="width:150px;" onchange="filterNilaiGuru()">
   <option value="">Semua Jenis</option>
   <option value="Tugas 1">Tugas 1</option>
   <option value="Tugas 2">Tugas 2</option>
@@ -550,20 +585,20 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
       <div class="page-section" id="sec-rekap-nilai">
         <div class="section-card">
           <div class="filter-bar">
-            <select id="fNiBulan" class="form-select form-select-sm" style="width:120px;" onchange="filterNilaiAdmin()">
+            <select id="fNiBulan" class="form-select form-select-sm" style="width:130px;" onchange="filterNilaiAdmin()">
               <option value="">Semua Bulan</option>
               <option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option>
               <option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option>
               <option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option>
               <option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option>
             </select>
-            <select id="fNiKelas" class="form-select form-select-sm" style="width:130px;" onchange="filterNilaiAdmin()">
+            <select id="fNiKelas" class="form-select form-select-sm" style="width:140px;" onchange="filterNilaiAdmin()">
               <option value="">Semua Kelas</option>
             </select>
             <select id="fNiMapel" class="form-select form-select-sm" style="width:160px;" onchange="filterNilaiAdmin()">
               <option value="">Semua Mapel</option>
             </select>
-            <select id="fNiJenis" class="form-select form-select-sm" style="width:140px;" onchange="filterNilaiAdmin()">
+            <select id="fNiJenis" class="form-select form-select-sm" style="width:150px;" onchange="filterNilaiAdmin()">
   <option value="">Semua Jenis</option>
   <option value="Tugas 1">Tugas 1</option>
   <option value="Tugas 2">Tugas 2</option>
@@ -606,7 +641,7 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
 
       <div class="page-section" id="sec-jurnal-pelatihan">
         <div class="section-card">
-          <div class="section-card-title"><i class="bi bi-award text-success me-2"></i>Input Jurnal Pelatihan</div>
+          <div class="section-card-title"><i class="bi bi-award me-2"></i>Input Jurnal Pelatihan</div>
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label">Tanggal</label>
@@ -635,8 +670,8 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
               <label class="form-label">Catatan</label>
               <textarea id="jp_catatan" class="form-control" rows="2" placeholder="Catatan tambahan (opsional)"></textarea>
             </div>
-            <div class="col-12 text-end">
-              <button class="btn btn-secondary me-2" onclick="resetForm('jp')">Reset</button>
+            <div class="col-12 text-end mt-4">
+              <button class="btn btn-light fw-semibold border me-2" onclick="resetForm('jp')">Reset</button>
               <button class="btn-orange" onclick="submitJurnalPelatihan()">
                 <i class="bi bi-cloud-upload me-1"></i>Simpan ke Sheets
               </button>
@@ -647,7 +682,7 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
 
       <div class="page-section" id="sec-prestasi-siswa">
         <div class="section-card">
-          <div class="section-card-title"><i class="bi bi-trophy text-warning me-2"></i>Input Prestasi Siswa</div>
+          <div class="section-card-title"><i class="bi bi-trophy me-2"></i>Input Prestasi Siswa</div>
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label">Tanggal</label>
@@ -659,7 +694,7 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
               <input type="hidden" id="ps_nisn"/>
               <input type="hidden" id="ps_nama_siswa"/>
               <input type="hidden" id="ps_kelas_siswa"/>
-              <div id="ps_siswa_dropdown" class="list-group" style="position:absolute;z-index:200;width:94%;display:none;max-height:180px;overflow-y:auto;"></div>
+              <div id="ps_siswa_dropdown" class="list-group shadow" style="position:absolute;z-index:200;width:94%;display:none;max-height:180px;overflow-y:auto; border-radius:10px;"></div>
             </div>
             <div class="col-md-6">
               <label class="form-label">Jenis Prestasi</label>
@@ -690,8 +725,8 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
               <label class="form-label">Catatan</label>
               <textarea id="ps_catatan" class="form-control" rows="2"></textarea>
             </div>
-            <div class="col-12 text-end">
-              <button class="btn btn-secondary me-2" onclick="resetForm('ps')">Reset</button>
+            <div class="col-12 text-end mt-4">
+              <button class="btn btn-light fw-semibold border me-2" onclick="resetForm('ps')">Reset</button>
               <button class="btn-orange" onclick="submitPrestasi()">
                 <i class="bi bi-cloud-upload me-1"></i>Simpan ke Sheets
               </button>
@@ -701,27 +736,27 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
       </div>
 
       <div class="page-section" id="sec-rekap-belajar">
-        <div class="row g-3 mb-3" id="statsRowBelajar">
-          <div class="col-6 col-md-3"><div class="card-stat p-3">
+        <div class="row g-3 mb-4" id="statsRowBelajar">
+          <div class="col-6 col-md-3"><div class="card-stat p-4 text-center">
             <div class="stat-label">Total Jurnal</div>
             <div class="stat-val" id="st_jb_total">0</div>
           </div></div>
-          <div class="col-6 col-md-3"><div class="card-stat p-3">
+          <div class="col-6 col-md-3"><div class="card-stat p-4 text-center">
             <div class="stat-label">Bulan Ini</div>
             <div class="stat-val" id="st_jb_bulan">0</div>
           </div></div>
-          <div class="col-6 col-md-3"><div class="card-stat p-3">
+          <div class="col-6 col-md-3"><div class="card-stat p-4 text-center">
             <div class="stat-label">Guru Aktif</div>
             <div class="stat-val" id="st_jb_guru">0</div>
           </div></div>
-          <div class="col-6 col-md-3"><div class="card-stat p-3">
+          <div class="col-6 col-md-3"><div class="card-stat p-4 text-center">
             <div class="stat-label">Status Inval</div>
             <div class="stat-val" id="st_jb_inval">0</div>
           </div></div>
         </div>
         <div class="section-card">
           <div class="filter-bar">
-            <select id="fJbBulan" class="form-select form-select-sm" style="width:120px;" onchange="filterJurnalBelajar()">
+            <select id="fJbBulan" class="form-select form-select-sm" style="width:130px;" onchange="filterJurnalBelajar()">
               <option value="">Semua Bulan</option>
               <option value="01">Januari</option><option value="02">Februari</option>
               <option value="03">Maret</option><option value="04">April</option>
@@ -730,7 +765,7 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
               <option value="09">September</option><option value="10">Oktober</option>
               <option value="11">November</option><option value="12">Desember</option>
             </select>
-            <select id="fJbKelas" class="form-select form-select-sm" style="width:130px;" onchange="filterJurnalBelajar()">
+            <select id="fJbKelas" class="form-select form-select-sm" style="width:140px;" onchange="filterJurnalBelajar()">
               <option value="">Semua Kelas</option>
             </select>
             <select id="fJbGuru" class="form-select form-select-sm" style="width:160px;" onchange="filterJurnalBelajar()">
@@ -766,7 +801,7 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
       <div class="page-section" id="sec-rekap-pelatihan">
         <div class="section-card">
           <div class="filter-bar">
-            <select id="fJpBulan" class="form-select form-select-sm" style="width:120px;" onchange="filterPelatihan()">
+            <select id="fJpBulan" class="form-select form-select-sm" style="width:130px;" onchange="filterPelatihan()">
               <option value="">Semua Bulan</option>
               <option value="01">Januari</option><option value="02">Februari</option>
               <option value="03">Maret</option><option value="04">April</option>
@@ -804,7 +839,7 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
       <div class="page-section" id="sec-rekap-prestasi">
         <div class="section-card">
           <div class="filter-bar">
-            <select id="fPsBulan" class="form-select form-select-sm" style="width:120px;" onchange="filterPrestasi()">
+            <select id="fPsBulan" class="form-select form-select-sm" style="width:130px;" onchange="filterPrestasi()">
               <option value="">Semua Bulan</option>
               <option value="01">Januari</option><option value="02">Februari</option>
               <option value="03">Maret</option><option value="04">April</option>
@@ -813,7 +848,7 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
               <option value="09">September</option><option value="10">Oktober</option>
               <option value="11">November</option><option value="12">Desember</option>
             </select>
-            <select id="fPsKelas" class="form-select form-select-sm" style="width:120px;" onchange="filterPrestasi()">
+            <select id="fPsKelas" class="form-select form-select-sm" style="width:130px;" onchange="filterPrestasi()">
               <option value="">Semua Kelas</option>
             </select>
             <div class="ms-auto d-flex gap-2">
@@ -841,7 +876,7 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
 
       <div class="page-section" id="sec-data-guru">
         <div class="section-card">
-          <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="d-flex justify-content-between align-items-center mb-4">
             <div class="section-card-title mb-0">Daftar Guru</div>
             <button class="btn-orange" onclick="openModal('guru')">
               <i class="bi bi-plus-lg me-1"></i>Tambah
@@ -860,7 +895,7 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
 
       <div class="page-section" id="sec-data-siswa">
         <div class="section-card">
-          <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="d-flex justify-content-between align-items-center mb-4">
             <div class="section-card-title mb-0">Data Siswa</div>
             <button class="btn-orange" onclick="openModal('siswa')">
               <i class="bi bi-plus-lg me-1"></i>Tambah
@@ -879,7 +914,7 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
 
       <div class="page-section" id="sec-data-kelas">
         <div class="section-card">
-          <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="d-flex justify-content-between align-items-center mb-4">
             <div class="section-card-title mb-0">Data Kelas</div>
             <button class="btn-orange" onclick="openModal('kelas')">
               <i class="bi bi-plus-lg me-1"></i>Tambah
@@ -898,7 +933,7 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
 
       <div class="page-section" id="sec-data-mapel">
         <div class="section-card">
-          <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="d-flex justify-content-between align-items-center mb-4">
             <div class="section-card-title mb-0">Mata Pelajaran</div>
             <button class="btn-orange" onclick="openModal('mapel')">
               <i class="bi bi-plus-lg me-1"></i>Tambah
@@ -917,7 +952,7 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
 
       <div class="page-section" id="sec-data-users">
         <div class="section-card">
-          <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="d-flex justify-content-between align-items-center mb-4">
             <div class="section-card-title mb-0">Akun Users</div>
             <button class="btn-orange" onclick="openModal('users')">
               <i class="bi bi-plus-lg me-1"></i>Tambah
@@ -935,11 +970,11 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
       </div>
 
       <div class="page-section" id="sec-konfigurasi">
-        <div class="section-card" style="max-width:600px;">
+        <div class="section-card" style="max-width:640px;">
           <div class="section-card-title">
             <i class="bi bi-gear me-2"></i>Konfigurasi Sekolah
           </div>
-          <div class="row g-3">
+          <div class="row g-4 mt-1">
             <div class="col-12">
               <label class="form-label">Nama Sekolah</label>
               <input type="text" id="cfg_nama" class="form-control"/>
@@ -952,16 +987,16 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
               <label class="form-label">Logo Sekolah
                 <span class="badge-auto">Base64 / URL</span>
               </label>
-              <div class="d-flex align-items-center gap-3 mb-2">
-                <div id="logoPreview" style="width:60px;height:60px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;">
+              <div class="d-flex align-items-center gap-3 mb-2 p-3 bg-light rounded" style="border: 1px dashed var(--border-soft);">
+                <div id="logoPreview" style="width:64px;height:64px;border-radius:50%;background:var(--hijau);display:flex;align-items:center;justify-content:center;box-shadow: 0 4px 10px rgba(5,150,105,.2);">
                   <i class="bi bi-mortarboard-fill" style="font-size:28px;color:#fff;"></i>
                 </div>
                 <div>
                   <input type="file" id="cfg_logo_file" accept="image/*" onchange="handleLogoUpload(this)" style="display:none;"/>
-                  <button class="btn btn-outline-secondary btn-sm" onclick="document.getElementById('cfg_logo_file').click()">
+                  <button class="btn btn-outline-secondary btn-sm fw-semibold" onclick="document.getElementById('cfg_logo_file').click()">
                     <i class="bi bi-upload me-1"></i>Upload Logo
                   </button>
-                  <div style="font-size:.72rem;color:#aaa;margin-top:4px;">JPG/PNG, maks 200KB</div>
+                  <div style="font-size:.75rem;color:#64748B;margin-top:6px;">JPG/PNG, maks 200KB</div>
                 </div>
               </div>
               <input type="hidden" id="cfg_logo_base64"/>
@@ -970,7 +1005,7 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
               <label class="form-label">Tahun Ajaran</label>
               <input type="text" id="cfg_tahun" class="form-control" placeholder="2024/2025"/>
             </div>
-            <div class="col-12 text-end">
+            <div class="col-12 text-end pt-2">
               <button class="btn-orange" onclick="saveKonfigurasi()">
                 <i class="bi bi-floppy me-1"></i>Simpan Konfigurasi
               </button>
@@ -979,8 +1014,10 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
         </div>
       </div>
 
-    </div></div></div><div class="modal fade" id="modalCrud" tabindex="-1">
-  <div class="modal-dialog">
+    </div></div></div>
+    
+<div class="modal fade" id="modalCrud" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="modalCrudTitle">Tambah Data</h5>
@@ -988,7 +1025,7 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
       </div>
       <div class="modal-body" id="modalCrudBody"></div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-light border fw-semibold" data-bs-dismiss="modal">Batal</button>
         <button type="button" class="btn-orange" onclick="saveCrud()">Simpan</button>
       </div>
     </div>
@@ -996,14 +1033,14 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
 </div>
 
 <div class="modal fade" id="modalAlert" tabindex="-1">
-  <div class="modal-dialog modal-sm">
+  <div class="modal-dialog modal-sm modal-dialog-centered">
     <div class="modal-content">
-      <div class="modal-body text-center py-4">
-        <div id="alertIcon" style="font-size:2.5rem;margin-bottom:8px;"></div>
-        <div id="alertMsg" style="font-size:.9rem;"></div>
+      <div class="modal-body text-center py-5">
+        <div id="alertIcon" style="font-size:3rem;margin-bottom:12px;"></div>
+        <div id="alertMsg" style="font-size:1rem; font-weight:500; color:#334155;"></div>
       </div>
-      <div class="modal-footer justify-content-center border-0 pt-0">
-        <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
+      <div class="modal-footer justify-content-center border-0 pt-0 pb-4">
+        <button class="btn btn-secondary px-4 fw-semibold" data-bs-dismiss="modal" style="border-radius:8px;">Tutup</button>
       </div>
     </div>
   </div>
@@ -1092,10 +1129,10 @@ function skipSetup() { backToLogin(); }
 function updateApiStatusBar() {
   const bar = document.getElementById("apiStatusBar");
   if (API_URL) {
-    bar.style.background = "#EAF3DE"; bar.style.color = "#3B6D11";
+    bar.style.background = "#D1FAE5"; bar.style.color = "#047857";
     bar.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i>Terhubung ke Google Sheets';
   } else {
-    bar.style.background = "#FFF3EC"; bar.style.color = "#854F0B";
+    bar.style.background = "#FFEDD5"; bar.style.color = "#C2410C";
     bar.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-1"></i>Mode Demo. <a href="#" onclick="showSetupPage()">Hubungkan</a>';
   }
 }
@@ -1374,6 +1411,7 @@ function setLogoElements(src) {
   document.getElementById("sidebarLogo").innerHTML = html;
   document.getElementById("logoPreview").innerHTML  = html;
   document.getElementById("logoPreview").style.background = "transparent";
+  document.getElementById("logoPreview").style.boxShadow = "none";
 }
 
 
@@ -1393,14 +1431,14 @@ function tampilkanDaftarSiswaNilai() {
   const tbody = document.getElementById("tbodySiswaBulk");
 
   if (siswaFilter.length === 0) {
-     tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-3">Tidak ada data siswa ditemukan untuk kelas ini.</td></tr>';
+     tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">Tidak ada data siswa ditemukan untuk kelas ini.</td></tr>';
   } else {
      // Render list siswa dengan input type number untuk nilai dan text untuk catatan
      tbody.innerHTML = siswaFilter.map((s, index) => `
         <tr>
-           <td class="text-center">${index + 1}</td>
+           <td class="text-center text-muted">${index + 1}</td>
            <td class="text-secondary">${s.NISN}</td>
-           <td class="fw-bold">${s.Nama}</td>
+           <td class="fw-bold" style="color: #1E293B;">${s.Nama}</td>
            <td>
               <input type="number" class="form-control form-control-sm inp-nilai-bulk" 
                      data-nisn="${s.NISN}" data-nama="${s.Nama}" 
@@ -1519,20 +1557,20 @@ function renderNilaiTable(data, tbodyId) {
   const tbody = document.getElementById(tbodyId);
   if (!data.length) {
     const cols = tbodyId === "tbodyNilaiAdmin" ? 8 : 7;
-    tbody.innerHTML = `<tr><td colspan="${cols}" class="text-center text-muted py-3">Belum ada data</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="${cols}" class="text-center text-muted py-4">Belum ada data</td></tr>`;
     return;
   }
   
   tbody.innerHTML = data.map(r => `
     <tr>
       <td>${formatTanggal(r.Tanggal)}</td>
-      <td>${r.Nama_Siswa||""}<br><small class="text-muted">${r.NISN||""}</small></td>
+      <td><span style="color:#1E293B;font-weight:600;">${r.Nama_Siswa||""}</span><br><small class="text-muted">${r.NISN||""}</small></td>
       <td>${r.Kelas||""}</td>
       <td>${r.Mapel||""}</td>
       <td><span class="badge bg-secondary">${r.Jenis_Penilaian||""}</span></td>
-      <td class="fw-bold">${r.Nilai||""}</td>
+      <td class="fw-bold" style="color:var(--hijau); font-size:1rem;">${r.Nilai||""}</td>
       ${tbodyId === "tbodyNilaiAdmin" ? `<td>${r.Guru_Pengampu||""}</td>` : ""}
-      <td style="max-width:140px;white-space:normal;color:#888;">${r.Catatan||""}</td>
+      <td style="max-width:140px;white-space:normal;color:#64748B;">${r.Catatan||""}</td>
     </tr>`).join("");
 }
 
@@ -1646,7 +1684,7 @@ document.getElementById("ps_siswa_search").addEventListener("input", function() 
   );
   if (!matches.length) { dd.style.display = "none"; return; }
   dd.innerHTML = matches.map(s =>
-    `<button class="list-group-item list-group-item-action" style="font-size:.82rem;" onclick="selectSiswa('${s.NISN}','${s.Nama}','${s.Kelas}')">${s.Nama} — ${s.Kelas} (${s.NISN})</button>`
+    `<button class="list-group-item list-group-item-action" style="font-size:.85rem; padding: 10px 16px;" onclick="selectSiswa('${s.NISN}','${s.Nama}','${s.Kelas}')">${s.Nama} — ${s.Kelas} (${s.NISN})</button>`
   ).join("");
   dd.style.display = "block";
 });
@@ -1666,16 +1704,16 @@ function renderJurnalBelajar(filtered) {
   state.activeJb = data;
   const tbody = document.getElementById("tbodyJurnalBelajar");
   if (!data.length) {
-    tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted py-3">Belum ada data</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted py-4">Belum ada data</td></tr>';
     return;
   }
   tbody.innerHTML = data.map(r => `
     <tr>
       <td>${formatTanggal(r.Tanggal)}</td><td>${r.Kelas||""}</td><td>${r.Mapel||""}</td>
-      <td class="text-center">${r.Jam_Ke||""}</td><td>${formatJam(r.Jam_Masuk)}</td>
+      <td class="text-center fw-bold">${r.Jam_Ke||""}</td><td>${formatJam(r.Jam_Masuk)}</td>
       <td>${r.Guru_Pengampu||""}</td><td><span class="badge ${r.Status_Guru==="Inval"?"badge-inval":"badge-pengampu"}">${r.Status_Guru||""}</span></td>
       <td>${r.Metode||"—"}</td><td style="max-width:180px;white-space:normal;">${r.Materi||"—"}</td>
-      <td style="max-width:140px;white-space:normal;color:#888;">${r.Catatan||""}</td>
+      <td style="max-width:140px;white-space:normal;color:#64748B;">${r.Catatan||""}</td>
     </tr>`).join("");
   const now   = new Date(); const bulan = String(now.getMonth()+1).padStart(2,"0");
   document.getElementById("st_jb_total").textContent = data.length;
@@ -1708,10 +1746,10 @@ function renderPelatihan(filtered) {
   const data  = filtered !== undefined ? filtered : state.jurnalPelatihan;
   state.activeJp = data;
   const tbody = document.getElementById("tbodyPelatihan");
-  if (!data.length) { tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Belum ada data</td></tr>'; return; }
+  if (!data.length) { tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">Belum ada data</td></tr>'; return; }
   tbody.innerHTML = data.map(r => `
     <tr>
-      <td>${formatTanggal(r.Tanggal)}</td><td>${r.Nama_Pelatihan||""}</td><td>${r.Penyelenggara||""}</td>
+      <td>${formatTanggal(r.Tanggal)}</td><td class="fw-bold" style="color:#1E293B;">${r.Nama_Pelatihan||""}</td><td>${r.Penyelenggara||""}</td>
       <td>${r.Guru_Peserta||""}</td><td>${r.Durasi||""} jam</td>
       <td><span class="badge ${r.Sertifikat==="Ya"?"badge-pengampu":"badge-inval"}">${r.Sertifikat||""}</span></td>
     </tr>`).join("");
@@ -1729,10 +1767,10 @@ function renderPrestasiTable(filtered) {
   const data  = filtered !== undefined ? filtered : state.prestasi;
   state.activePs = data;
   const tbody = document.getElementById("tbodyPrestasi");
-  if (!data.length) { tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Belum ada data</td></tr>'; return; }
+  if (!data.length) { tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">Belum ada data</td></tr>'; return; }
   tbody.innerHTML = data.map(r => `
     <tr>
-      <td>${formatTanggal(r.Tanggal)}</td><td>${r.Nama_Siswa||""}</td><td>${r.Kelas||""}</td>
+      <td>${formatTanggal(r.Tanggal)}</td><td class="fw-bold" style="color:#1E293B;">${r.Nama_Siswa||""}</td><td>${r.Kelas||""}</td>
       <td>${r.Nama_Lomba||""}</td><td>${r.Tingkat||""}</td>
       <td><span class="badge badge-pengampu">${r.Peringkat||""}</span></td>
     </tr>`).join("");
@@ -1750,59 +1788,59 @@ function renderGuru() {
   const tbody = document.getElementById("tbodyGuru");
   tbody.innerHTML = state.guru.map(r => `
     <tr>
-      <td>${r.ID_Guru}</td><td>${r.Nama}</td><td>${r.NIP||""}</td>
+      <td>${r.ID_Guru}</td><td class="fw-bold" style="color:#1E293B;">${r.Nama}</td><td>${r.NIP||""}</td>
       <td>${r.Mata_Pelajaran||""}</td><td>${r.No_HP||""}</td>
       <td>
         <button class="btn btn-sm btn-outline-primary action-btn me-1" onclick="openModal('guru','${r.ID_Guru}')"><i class="bi bi-pencil"></i></button>
         <button class="btn btn-sm btn-outline-danger action-btn" onclick="delRecord('guru','${r.ID_Guru}')"><i class="bi bi-trash"></i></button>
       </td>
-    </tr>`).join("") || '<tr><td colspan="6" class="text-center text-muted">Belum ada data</td></tr>';
+    </tr>`).join("") || '<tr><td colspan="6" class="text-center text-muted py-4">Belum ada data</td></tr>';
 }
 function renderSiswa() {
   const tbody = document.getElementById("tbodySiswa");
   tbody.innerHTML = state.siswa.map(r => `
     <tr>
-      <td>${r.NISN}</td><td>${r.Nama}</td><td>${r.Kelas||""}</td>
+      <td>${r.NISN}</td><td class="fw-bold" style="color:#1E293B;">${r.Nama}</td><td>${r.Kelas||""}</td>
       <td>${r.Jenis_Kelamin||""}</td><td>${r.No_HP_Ortu||""}</td>
       <td>
         <button class="btn btn-sm btn-outline-primary action-btn me-1" onclick="openModal('siswa','${r.NISN}')"><i class="bi bi-pencil"></i></button>
         <button class="btn btn-sm btn-outline-danger action-btn" onclick="delRecord('siswa','${r.NISN}')"><i class="bi bi-trash"></i></button>
       </td>
-    </tr>`).join("") || '<tr><td colspan="6" class="text-center text-muted">Belum ada data</td></tr>';
+    </tr>`).join("") || '<tr><td colspan="6" class="text-center text-muted py-4">Belum ada data</td></tr>';
 }
 function renderKelas() {
   const tbody = document.getElementById("tbodyKelas");
   tbody.innerHTML = state.kelas.map(r => `
     <tr>
-      <td>${r.ID_Kelas}</td><td>${r.Nama_Kelas}</td><td>${r.Tingkat||""}</td><td>${r.Wali_Kelas||""}</td>
+      <td>${r.ID_Kelas}</td><td class="fw-bold" style="color:#1E293B;">${r.Nama_Kelas}</td><td>${r.Tingkat||""}</td><td>${r.Wali_Kelas||""}</td>
       <td>
         <button class="btn btn-sm btn-outline-primary action-btn me-1" onclick="openModal('kelas','${r.ID_Kelas}')"><i class="bi bi-pencil"></i></button>
         <button class="btn btn-sm btn-outline-danger action-btn" onclick="delRecord('kelas','${r.ID_Kelas}')"><i class="bi bi-trash"></i></button>
       </td>
-    </tr>`).join("") || '<tr><td colspan="5" class="text-center text-muted">Belum ada data</td></tr>';
+    </tr>`).join("") || '<tr><td colspan="5" class="text-center text-muted py-4">Belum ada data</td></tr>';
 }
 function renderMapel() {
   const tbody = document.getElementById("tbodyMapel");
   tbody.innerHTML = state.mapel.map(r => `
     <tr>
-      <td>${r.ID_Mapel}</td><td>${r.Nama_Mapel}</td><td>${r.Kode||""}</td>
+      <td>${r.ID_Mapel}</td><td class="fw-bold" style="color:#1E293B;">${r.Nama_Mapel}</td><td>${r.Kode||""}</td>
       <td>
         <button class="btn btn-sm btn-outline-primary action-btn me-1" onclick="openModal('mapel','${r.ID_Mapel}')"><i class="bi bi-pencil"></i></button>
         <button class="btn btn-sm btn-outline-danger action-btn" onclick="delRecord('mapel','${r.ID_Mapel}')"><i class="bi bi-trash"></i></button>
       </td>
-    </tr>`).join("") || '<tr><td colspan="4" class="text-center text-muted">Belum ada data</td></tr>';
+    </tr>`).join("") || '<tr><td colspan="4" class="text-center text-muted py-4">Belum ada data</td></tr>';
 }
 function renderUsers() {
   const tbody = document.getElementById("tbodyUsers");
   tbody.innerHTML = state.users.map(r => `
     <tr>
-      <td>${r.Username}</td><td>${r.Nama_Lengkap||""}</td>
+      <td class="fw-bold" style="color:#1E293B;">${r.Username}</td><td>${r.Nama_Lengkap||""}</td>
       <td><span class="badge ${r.Role==="admin"?"badge-admin":"badge-guru"}">${r.Role}</span></td>
       <td>
         <button class="btn btn-sm btn-outline-primary action-btn me-1" onclick="openModal('users','${r.Username}')"><i class="bi bi-pencil"></i></button>
         ${r.Role!=="admin"?`<button class="btn btn-sm btn-outline-danger action-btn" onclick="delRecord('users','${r.Username}')"><i class="bi bi-trash"></i></button>`:""}
       </td>
-    </tr>`).join("") || '<tr><td colspan="4" class="text-center text-muted">Belum ada data</td></tr>';
+    </tr>`).join("") || '<tr><td colspan="4" class="text-center text-muted py-4">Belum ada data</td></tr>';
 }
 
 function openModal(mode, id) {
@@ -1817,32 +1855,32 @@ function openModal(mode, id) {
   }
   const v = (f) => record ? (record[f]||"") : "";
   const forms = {
-    guru: `<div class="row g-2">
+    guru: `<div class="row g-3">
       <div class="col-6"><label class="form-label">ID Guru</label><input id="m_id" class="form-control" value="${v("ID_Guru")}" ${isEdit?"readonly":""}/></div>
       <div class="col-6"><label class="form-label">Nama Lengkap</label><input id="m_nama" class="form-control" value="${v("Nama")}"/></div>
       <div class="col-6"><label class="form-label">NIP</label><input id="m_nip" class="form-control" value="${v("NIP")}"/></div>
       <div class="col-6"><label class="form-label">Mata Pelajaran</label><input id="m_mapel" class="form-control" value="${v("Mata_Pelajaran")}"/></div>
       <div class="col-6"><label class="form-label">No HP</label><input id="m_hp" class="form-control" value="${v("No_HP")}"/></div>
       <div class="col-6"><label class="form-label">Email</label><input id="m_email" class="form-control" value="${v("Email")}"/></div></div>`,
-    siswa: `<div class="row g-2">
+    siswa: `<div class="row g-3">
       <div class="col-6"><label class="form-label">NISN</label><input id="m_nisn" class="form-control" value="${v("NISN")}" ${isEdit?"readonly":""}/></div>
       <div class="col-6"><label class="form-label">Nama</label><input id="m_nama" class="form-control" value="${v("Nama")}"/></div>
       <div class="col-6"><label class="form-label">Kelas</label><input id="m_kelas" class="form-control" value="${v("Kelas")}"/></div>
       <div class="col-6"><label class="form-label">Jenis Kelamin</label><select id="m_jk" class="form-select"><option ${v("Jenis_Kelamin")==="L"?"selected":""} value="L">Laki-laki</option><option ${v("Jenis_Kelamin")==="P"?"selected":""} value="P">Perempuan</option></select></div>
       <div class="col-12"><label class="form-label">Alamat</label><input id="m_alamat" class="form-control" value="${v("Alamat")}"/></div>
       <div class="col-6"><label class="form-label">No HP Ortu</label><input id="m_hp" class="form-control" value="${v("No_HP_Ortu")}"/></div></div>`,
-    kelas: `<div class="row g-2">
+    kelas: `<div class="row g-3">
       <div class="col-6"><label class="form-label">ID Kelas</label><input id="m_id" class="form-control" value="${v("ID_Kelas")}" ${isEdit?"readonly":""}/></div>
       <div class="col-6"><label class="form-label">Nama Kelas</label><input id="m_nama" class="form-control" value="${v("Nama_Kelas")}"/></div>
       <div class="col-6"><label class="form-label">Tingkat</label><input id="m_tingkat" class="form-control" value="${v("Tingkat")}"/></div>
       <div class="col-6"><label class="form-label">Wali Kelas</label><input id="m_wali" class="form-control" value="${v("Wali_Kelas")}"/></div></div>`,
-    mapel: `<div class="row g-2">
+    mapel: `<div class="row g-3">
       <div class="col-4"><label class="form-label">ID Mapel</label><input id="m_id" class="form-control" value="${v("ID_Mapel")}" ${isEdit?"readonly":""}/></div>
       <div class="col-5"><label class="form-label">Nama Mapel</label><input id="m_nama" class="form-control" value="${v("Nama_Mapel")}"/></div>
       <div class="col-3"><label class="form-label">Kode</label><input id="m_kode" class="form-control" value="${v("Kode")}"/></div></div>`,
-    users: `<div class="row g-2">
+    users: `<div class="row g-3">
       <div class="col-6"><label class="form-label">Username</label><input id="m_username" class="form-control" value="${v("Username")}" ${isEdit?"readonly":""}/></div>
-      <div class="col-6"><label class="form-label">Password ${isEdit?"(kosongkan jika tidak ganti)":""}</label><input type="password" id="m_password" class="form-control" placeholder="${isEdit?"(tidak diubah)":"wajib diisi"}"/></div>
+      <div class="col-6"><label class="form-label">Password ${isEdit?"<small>(kosongkan jika tidak ganti)</small>":""}</label><input type="password" id="m_password" class="form-control" placeholder="${isEdit?"(tidak diubah)":"wajib diisi"}"/></div>
       <div class="col-6"><label class="form-label">Nama Lengkap</label><input id="m_namalengkap" class="form-control" value="${v("Nama_Lengkap")}"/></div>
       <div class="col-6"><label class="form-label">Role</label><select id="m_role" class="form-select"><option ${v("Role")==="admin"?"selected":""} value="admin">Admin</option><option ${v("Role")==="guru"?"selected":""} value="guru">Guru</option></select></div></div>`,
   };
@@ -1979,7 +2017,8 @@ function downloadPDF(type) {
   const pageHeight = doc.internal.pageSize.getHeight();
   const centerX = pageWidth / 2;
 
-  doc.setFillColor(232, 101, 10); doc.rect(0, 0, pageWidth, 22, "F");
+  // Header PDF menggunakan warna Hijau Premium (5, 150, 105)
+  doc.setFillColor(5, 150, 105); doc.rect(0, 0, pageWidth, 22, "F");
   doc.setTextColor(255,255,255); doc.setFontSize(15); doc.setFont(undefined,"bold");
   doc.text(namaSekolah, centerX, 10, {align:"center"});
   doc.setFontSize(8); doc.setFont(undefined,"normal");
@@ -2022,8 +2061,8 @@ function downloadPDF(type) {
   doc.autoTable({
     startY: 40, head, body,
     styles: { fontSize: 7, cellPadding: 2, overflow: 'linebreak' },
-    headStyles: { fillColor: [232, 101, 10], textColor: 255, fontStyle: "bold" },
-    alternateRowStyles: { fillColor: [255, 243, 236] },
+    headStyles: { fillColor: [5, 150, 105], textColor: 255, fontStyle: "bold" },
+    alternateRowStyles: { fillColor: [236, 253, 245] },
     margin: { left: 10, right: 10, bottom: 20 },
   });
 
@@ -2077,11 +2116,9 @@ function downloadExcel(type) {
     ];
   }
 
-  // --- BAGIAN YANG DIPERBAIKI (WAJIB ADA) ---
   const ws = XLSX.utils.aoa_to_sheet(wsData);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "Rekap");
-  // ------------------------------------------
 
   const fileName = type + "_" + today.replace(/\//g,"-") + ".xlsx";
   const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
@@ -2107,7 +2144,7 @@ function downloadExcel(type) {
   } catch (e) {
       console.log("Download error: " + e);
   }
-} // <--- Pastikan kurung tutup fungsi ada di sini
+} 
 // ── INIT ──────────────────────────────────────────────────
 (function init() {
   const saved = localStorage.getItem("SDIT_SESSION");
