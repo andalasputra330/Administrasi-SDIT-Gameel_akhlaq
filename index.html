@@ -4,6 +4,11 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
 <title>SDIT Gameel Akhlaq – Administrasi</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -11,170 +16,222 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <style>
-/* ─── VARIABEL WARNA ─────────────────────────────── */
+/* ─── VARIABEL WARNA TEMA BARU ───────────────────────── */
 :root {
-  --orange:       #E8650A;
-  --orange-d:     #C4530A;
-  --orange-light: #FFF3EC;
-  --orange-mid:   #F97316;
-  --sidebar-bg:   #1a1a2e;
-  --sidebar-text: #c8c9d0;
-  --sidebar-act:  rgba(232,101,10,.18);
+  --primary-green:      #15803d;
+  --primary-green-dark: #166534;
+  --light-green:        #dcfce7;
+  --hover-green:        #f0fdf4;
+  --orange-accent:      #f97316;
+  --orange-dark:        #ea580c;
+  --soft-orange:        #ffedd5;
+  --bg-main:            #f5f7fb;
+  --bg-card:            #ffffff;
+  --text-main:          #334155;
+  --text-muted:         #64748b;
+  --border-color:       #e2e8f0;
 }
 
 /* ─── GLOBAL ─────────────────────────────────────── */
 * { box-sizing: border-box; }
-body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100vh; }
+body { 
+  font-family: 'Poppins', sans-serif; 
+  background: var(--bg-main); 
+  color: var(--text-main);
+  min-height: 100vh; 
+}
+a { text-decoration: none; }
 
 /* ─── LOADING OVERLAY ─────────────────────────────── */
 #loadingOverlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,.45);
+  position: fixed; inset: 0; background: rgba(255,255,255,.8); backdrop-filter: blur(5px);
   z-index: 9999; display: flex; flex-direction: column;
   align-items: center; justify-content: center; display: none;
 }
-#loadingOverlay .spinner { width: 48px; height: 48px; border: 5px solid #fff3;
-  border-top-color: var(--orange); border-radius: 50%; animation: spin .8s linear infinite; }
-#loadingOverlay p { color: #fff; margin-top: 12px; font-size: 14px; }
+#loadingOverlay .spinner { width: 50px; height: 50px; border: 5px solid var(--light-green);
+  border-top-color: var(--primary-green); border-radius: 50%; animation: spin .8s linear infinite; }
+#loadingOverlay p { color: var(--primary-green); font-weight: 600; margin-top: 15px; font-size: 15px; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ─── LOGIN ──────────────────────────────────────── */
-#pageLogin {
+/* ─── LOGIN & SETUP PAGE (GLASSMORPHISM) ──────────── */
+#pageLogin, #pageSetup {
   min-height: 100vh; display: flex; align-items: center; justify-content: center;
-  background: linear-gradient(135deg, #fff3ec 0%, #fde9d9 100%);
+  background: linear-gradient(135deg, var(--light-green) 0%, var(--soft-orange) 100%);
 }
-.login-card { background: #fff; border-radius: 16px; padding: 40px 36px;
-  box-shadow: 0 8px 32px rgba(232,101,10,.12); width: 100%; max-width: 380px; }
-.logo-circle { width: 72px; height: 72px; border-radius: 50%;
-  background: var(--orange); display: flex; align-items: center;
-  justify-content: center; margin: 0 auto 12px; }
-.logo-circle img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
-.logo-circle i { font-size: 36px; color: #fff; }
-.login-title { text-align: center; font-size: 1.15rem; font-weight: 700; color: #333; }
-.login-sub   { text-align: center; font-size: .82rem; color: #888; margin-bottom: 24px; }
-.btn-login { background: var(--orange); color: #fff; border: none;
-  padding: 10px; width: 100%; border-radius: 8px; font-weight: 600;
-  font-size: 1rem; transition: background .2s; }
-.btn-login:hover { background: var(--orange-d); color: #fff; }
+.login-card, .setup-card { 
+  background: rgba(255, 255, 255, 0.95); 
+  backdrop-filter: blur(12px);
+  border-radius: 24px; padding: 45px 40px;
+  box-shadow: 0 20px 40px rgba(21, 128, 61, 0.1); 
+  border: 1px solid rgba(255,255,255,0.6);
+  width: 100%; max-width: 420px; 
+}
+.setup-card { max-width: 540px; }
+.logo-circle { width: 80px; height: 80px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--light-green) 0%, #bbf7d0 100%); 
+  display: flex; align-items: center; justify-content: center; 
+  margin: 0 auto 16px; box-shadow: 0 8px 16px rgba(21, 128, 61, 0.15);
+}
+.logo-circle img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; }
+.logo-circle i { font-size: 40px; color: var(--primary-green); }
+.login-title { text-align: center; font-size: 1.3rem; font-weight: 700; color: var(--primary-green); }
+.login-sub   { text-align: center; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 28px; }
 
-/* ─── APP SHELL ──────────────────────────────────── */
+/* ─── BUTTONS MODERN ─────────────────────────────── */
+/* Primary Button (Dulu btn-orange) */
+.btn-main, .btn-orange { 
+  background: linear-gradient(135deg, #16a34a 0%, var(--primary-green) 100%); 
+  color: #fff; border: none; border-radius: 14px;
+  padding: 10px 22px; font-size: 0.9rem; font-weight: 600; 
+  box-shadow: 0 6px 15px rgba(21, 128, 61, 0.2); transition: all 0.3s ease; 
+}
+.btn-main:hover, .btn-orange:hover { 
+  background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-green-dark) 100%); 
+  color: #fff; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(21, 128, 61, 0.3); 
+}
+.btn-login { width: 100%; padding: 12px; font-size: 1rem; border-radius: 16px; }
+
+/* Secondary Button (Reset/Cancel) */
+.btn-secondary {
+  background: var(--soft-orange); color: var(--orange-accent);
+  border: none; border-radius: 14px; font-weight: 600;
+  padding: 10px 22px; transition: all 0.3s ease;
+}
+.btn-secondary:hover { background: #fed7aa; color: var(--orange-dark); transform: translateY(-2px); }
+
+/* Download Buttons */
+.btn-dl-pdf { background: #fee2e2; color: #b91c1c; border-radius: 10px; border:none; padding: 7px 16px; font-size: .8rem; font-weight: 600; cursor: pointer; transition: all 0.2s;}
+.btn-dl-xls { background: var(--light-green); color: var(--primary-green-dark); border-radius: 10px; border:none; padding: 7px 16px; font-size: .8rem; font-weight: 600; cursor: pointer; transition: all 0.2s;}
+.btn-dl-pdf:hover { background: #fca5a5; } .btn-dl-xls:hover { background: #bbf7d0; }
+.btn-dl-pdf i, .btn-dl-xls i { margin-right: 6px; }
+
+/* ─── APP SHELL & SIDEBAR ────────────────────────── */
 #appShell { display: none; min-height: 100vh; }
 
-/* ─── SIDEBAR ─────────────────────────────────────── */
 .sidebar {
-  width: 230px; min-height: 100vh; background: var(--sidebar-bg);
+  width: 250px; min-height: 100vh; background: var(--bg-card);
   position: fixed; top: 0; left: 0; z-index: 100;
   display: flex; flex-direction: column; transition: transform .3s;
+  box-shadow: 4px 0 25px rgba(0,0,0,0.03); border-right: 1px solid var(--border-color);
 }
-.sidebar-brand { display: flex; align-items: center; gap: 10px;
-  padding: 18px 16px; border-bottom: 1px solid rgba(255,255,255,.07); }
-.sidebar-brand .brand-logo { width: 36px; height: 36px; border-radius: 50%;
-  background: var(--orange); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.sidebar-brand .brand-logo img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
-.sidebar-brand .brand-logo i  { font-size: 18px; color: #fff; }
-.brand-name { font-size: .78rem; font-weight: 700; color: #fff; line-height: 1.3; }
-.brand-sub  { font-size: .68rem; color: var(--sidebar-text); }
-.nav-section { font-size: .62rem; text-transform: uppercase; letter-spacing: .08em;
-  color: #555; padding: 14px 16px 4px; }
-.nav-link-item { display: flex; align-items: center; gap: 10px;
-  padding: 9px 16px; font-size: .82rem; color: var(--sidebar-text);
-  border-radius: 8px; margin: 2px 8px; cursor: pointer; transition: all .15s; text-decoration: none; }
-.nav-link-item i { font-size: 1.05rem; }
-.nav-link-item:hover { background: var(--sidebar-act); color: var(--orange-mid); }
-.nav-link-item.active { background: var(--sidebar-act); color: var(--orange-mid); font-weight: 600; }
-.sidebar-bottom { margin-top: auto; padding: 12px 8px;
-  border-top: 1px solid rgba(255,255,255,.07); }
+.sidebar-brand { display: flex; align-items: center; gap: 12px;
+  padding: 24px 20px; border-bottom: 1px solid var(--border-color); }
+.sidebar-brand .brand-logo { width: 42px; height: 42px; border-radius: 12px;
+  background: var(--light-green); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.sidebar-brand .brand-logo img { width: 36px; height: 36px; border-radius: 10px; object-fit: cover; }
+.sidebar-brand .brand-logo i  { font-size: 22px; color: var(--primary-green); }
+.brand-name { font-size: 0.9rem; font-weight: 700; color: var(--primary-green); line-height: 1.2; }
+.brand-sub  { font-size: 0.7rem; color: var(--orange-accent); font-weight: 600; background: var(--soft-orange); padding: 2px 8px; border-radius: 6px; display: inline-block; margin-top: 4px;}
+
+.nav-section { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
+  color: var(--text-muted); padding: 20px 24px 8px; }
+.nav-link-item { display: flex; align-items: center; gap: 12px;
+  padding: 12px 20px; font-size: 0.85rem; color: var(--text-main); font-weight: 500;
+  border-radius: 12px; margin: 4px 12px; cursor: pointer; transition: all .2s; text-decoration: none; }
+.nav-link-item i { font-size: 1.15rem; color: var(--text-muted); transition: color .2s;}
+.nav-link-item:hover { background: var(--hover-green); color: var(--primary-green); }
+.nav-link-item:hover i { color: var(--primary-green); }
+.nav-link-item.active { background: var(--light-green); color: var(--primary-green); font-weight: 600; }
+.nav-link-item.active i { color: var(--primary-green); }
+.sidebar-bottom { margin-top: auto; padding: 16px 12px; border-top: 1px solid var(--border-color); }
 
 /* ─── TOPBAR ─────────────────────────────────────── */
-.topbar { height: 56px; background: #fff; border-bottom: 1px solid #eee;
-  display: flex; align-items: center; padding: 0 20px;
-  position: sticky; top: 0; z-index: 50; gap: 10px; }
-.topbar-title { font-size: 1rem; font-weight: 700; color: #333; flex: 1; }
-.user-chip { display: flex; align-items: center; gap: 8px;
-  font-size: .82rem; color: #555; }
-.user-avatar { width: 32px; height: 32px; border-radius: 50%;
-  background: var(--orange); color: #fff; font-size: .72rem; font-weight: 700;
+.topbar { height: 70px; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-color); display: flex; align-items: center; padding: 0 28px;
+  position: sticky; top: 0; z-index: 50; gap: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
+.topbar-title { font-size: 1.2rem; font-weight: 700; color: var(--primary-green); flex: 1; letter-spacing: -0.5px;}
+.user-chip { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; font-weight: 500; color: var(--text-main); background: #f8fafc; padding: 6px 14px 6px 6px; border-radius: 50px; border: 1px solid var(--border-color);}
+.user-avatar { width: 36px; height: 36px; border-radius: 50%;
+  background: var(--soft-orange); color: var(--orange-accent); font-size: 0.85rem; font-weight: 700;
   display: flex; align-items: center; justify-content: center; }
 
-/* ─── MAIN AREA ──────────────────────────────────── */
-.main-area { margin-left: 230px; transition: margin .3s; }
-.page-content { padding: 20px; }
-.page-section { display: none; }
+/* ─── MAIN AREA & CARDS ──────────────────────────── */
+.main-area { margin-left: 250px; transition: margin .3s; }
+.page-content { padding: 30px; }
+.page-section { display: none; animation: fadeIn 0.4s ease; }
 .page-section.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* ─── CARDS ──────────────────────────────────────── */
-.card-stat { border: none; border-radius: 12px; background: #fff;
-  box-shadow: 0 2px 8px rgba(0,0,0,.06); }
-.stat-val { font-size: 1.8rem; font-weight: 700; color: var(--orange); }
-.stat-label { font-size: .78rem; color: #888; }
-.section-card { background: #fff; border-radius: 12px; padding: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,.05); margin-bottom: 20px; }
-.section-card-title { font-size: .92rem; font-weight: 700; color: #333; margin-bottom: 16px; }
+.card-stat { border: none; border-radius: 20px; background: var(--bg-card);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.03); border: 1px solid var(--border-color); transition: transform 0.3s; }
+.card-stat:hover { transform: translateY(-5px); box-shadow: 0 12px 30px rgba(21, 128, 61, 0.08); }
+.stat-val { font-size: 2.2rem; font-weight: 700; color: var(--primary-green); line-height: 1.2; margin-top: 5px;}
+.stat-label { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;}
 
-/* ─── FORM ───────────────────────────────────────── */
-.form-label { font-size: .8rem; font-weight: 600; color: #555; }
-.form-control, .form-select { font-size: .85rem; }
-.badge-auto { font-size: .65rem; background: #FFF3EC; color: var(--orange);
-  padding: 2px 6px; border-radius: 4px; font-weight: 600; margin-left: 4px; }
-.btn-orange { background: var(--orange); color: #fff; border: none; border-radius: 8px;
-  padding: 8px 20px; font-size: .85rem; font-weight: 600; transition: background .2s; }
-.btn-orange:hover { background: var(--orange-d); color: #fff; }
+.section-card { background: var(--bg-card); border-radius: 20px; padding: 28px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.03); border: 1px solid var(--border-color); margin-bottom: 24px; }
+.section-card-title { font-size: 1.1rem; font-weight: 700; color: var(--primary-green); margin-bottom: 20px; display: flex; align-items: center;}
+.section-card-title i { margin-right: 10px; font-size: 1.3rem; background: var(--light-green); width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; border-radius: 10px; color: var(--primary-green) !important;}
+
+/* ─── FORMS MODERN ───────────────────────────────── */
+.form-label { font-size: 0.85rem; font-weight: 600; color: var(--text-main); margin-bottom: 6px;}
+.form-control, .form-select { 
+  font-size: 0.9rem; border: 1px solid #bbf7d0; border-radius: 14px; 
+  padding: 10px 16px; background-color: #f8fafc; transition: all 0.3s ease; height: 45px;
+}
+.form-control:focus, .form-select:focus { 
+  background-color: #fff; border-color: var(--orange-accent); 
+  box-shadow: 0 0 0 4px var(--soft-orange); outline: none;
+}
+textarea.form-control { height: auto; }
+.badge-auto { font-size: 0.7rem; background: var(--soft-orange); color: var(--orange-dark);
+  padding: 3px 8px; border-radius: 6px; font-weight: 600; margin-left: 6px; vertical-align: middle;}
 
 /* ─── FILTER BAR ─────────────────────────────────── */
-.filter-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 14px; }
-.filter-bar select { font-size: .8rem; }
-.btn-dl-pdf { background: #FCEBEB; color: #A32D2D; border: 1px solid #F09595;
-  border-radius: 7px; padding: 5px 12px; font-size: .78rem; font-weight: 600; cursor: pointer; }
-.btn-dl-xls { background: #EAF3DE; color: #3B6D11; border: 1px solid #97C459;
-  border-radius: 7px; padding: 5px 12px; font-size: .78rem; font-weight: 600; cursor: pointer; }
-.btn-dl-pdf i, .btn-dl-xls i { margin-right: 4px; }
+.filter-bar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 20px; background: #f8fafc; padding: 12px 16px; border-radius: 16px; border: 1px solid var(--border-color);}
+.filter-bar select { font-size: 0.85rem; background-color: #fff; height: 38px;}
 
-/* ─── TABLE ──────────────────────────────────────── */
-.table { font-size: .8rem; }
-.table thead th { background: #f8f9fa; font-size: .72rem; text-transform: uppercase;
-  letter-spacing: .04em; color: #888; font-weight: 700; }
-.badge-pengampu { background: #EAF3DE; color: #3B6D11; }
-.badge-inval    { background: #FAEEDA; color: #854F0B; }
-.badge-admin    { background: #FFF3EC; color: #E8650A; }
-.badge-guru     { background: #EAF3DE; color: #3B6D11; }
-.action-btn { padding: 3px 7px; font-size: .75rem; }
-
-/* ─── HAMBURGER (mobile) ─────────────────────────── */
-.hamburger { display: none; background: none; border: none;
-  font-size: 1.5rem; color: #333; cursor: pointer; margin-right: 8px; }
-.sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 99; }
-
-/* ─── HALAMAN SETUP API URL ──────────────────────── */
-#pageSetup {
-  min-height: 100vh; display: none; align-items: center; justify-content: center;
-  background: linear-gradient(135deg, #fff3ec 0%, #fde9d9 100%);
+/* ─── TABLE MODERN ───────────────────────────────── */
+.table-responsive { border-radius: 16px; border: 1px solid var(--border-color); overflow: hidden; background: #fff;}
+.table { font-size: 0.85rem; margin-bottom: 0; }
+.table thead th { 
+  background: var(--light-green); color: var(--primary-green-dark); 
+  font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; 
+  font-weight: 700; padding: 14px 16px; border-bottom: none; border-top: none;
 }
-.setup-card { background: #fff; border-radius: 16px; padding: 36px 32px;
-  box-shadow: 0 8px 32px rgba(232,101,10,.14); width: 100%; max-width: 520px; }
-.setup-step { display: flex; gap: 12px; align-items: flex-start;
-  background: #f8f9fa; border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; }
-.setup-step-num { width: 26px; height: 26px; border-radius: 50%;
-  background: var(--orange); color: #fff; font-size: .78rem; font-weight: 700;
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
-.setup-step-text { font-size: .82rem; color: #444; line-height: 1.5; }
-.setup-step-text b { color: #222; }
-.setup-step-text code { background: #FFF3EC; color: var(--orange);
-  padding: 1px 5px; border-radius: 4px; font-size: .8rem; }
-.url-status { font-size: .78rem; margin-top: 6px; padding: 6px 10px; border-radius: 6px; }
-.url-status.ok  { background: #EAF3DE; color: #3B6D11; }
-.url-status.err { background: #FCEBEB; color: #A32D2D; }
+.table tbody td { padding: 12px 16px; vertical-align: middle; border-bottom: 1px solid #f1f5f9; color: var(--text-main); }
+.table-hover tbody tr:hover { background-color: var(--hover-green) !important; }
+
+/* Badges */
+.badge { padding: 6px 10px; border-radius: 8px; font-weight: 600; font-size: 0.75rem; letter-spacing: 0.3px;}
+.badge-pengampu { background: var(--light-green); color: var(--primary-green-dark); }
+.badge-inval    { background: var(--soft-orange); color: var(--orange-dark); }
+.badge-admin    { background: var(--light-green); color: var(--primary-green-dark); }
+.badge-guru     { background: #e0f2fe; color: #0369a1; }
+.action-btn { padding: 5px 10px; font-size: 0.85rem; border-radius: 8px; margin-right: 4px;}
 
 /* ─── MODAL ──────────────────────────────────────── */
-.modal-title { font-size: .95rem; font-weight: 700; }
+.modal-content { border-radius: 20px; border: none; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+.modal-header { border-bottom: 1px solid var(--border-color); padding: 20px 24px; background: #f8fafc; border-radius: 20px 20px 0 0;}
+.modal-title { font-size: 1.1rem; font-weight: 700; color: var(--primary-green); }
+.modal-body { padding: 24px; }
+.modal-footer { border-top: 1px solid var(--border-color); padding: 16px 24px; }
 
-/* ─── RESPONSIVE ─────────────────────────────────── */
+/* ─── HAMBURGER & RESPONSIVE ─────────────────────── */
+.hamburger { display: none; background: var(--light-green); border: none; border-radius: 10px; width: 40px; height: 40px;
+  font-size: 1.5rem; color: var(--primary-green); cursor: pointer; margin-right: 10px; transition: all .2s;}
+.hamburger:active { transform: scale(0.95); }
+.sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); backdrop-filter: blur(3px); z-index: 99; }
+
 @media (max-width: 768px) {
   .sidebar { transform: translateX(-100%); }
   .sidebar.open { transform: translateX(0); }
   .sidebar-overlay.show { display: block; }
   .main-area { margin-left: 0 !important; }
-  .hamburger { display: block; }
+  .hamburger { display: flex; align-items: center; justify-content: center; }
   .stats-row .col { min-width: 140px; }
+  .page-content { padding: 16px; }
+  .section-card { padding: 20px; }
+  .filter-bar { flex-direction: column; align-items: stretch; }
+  .filter-bar select { width: 100% !important; }
 }
+
+/* Halaman Setup - URL Status */
+.setup-step { background: #f8fafc; border: 1px solid var(--border-color); border-radius: 14px; padding: 14px 16px; margin-bottom: 12px; }
+.setup-step-num { background: var(--primary-green); color: #fff; width: 28px; height: 28px; font-size: 0.85rem;}
+.setup-step-text code { background: var(--light-green); color: var(--primary-green-dark); padding: 2px 6px; border-radius: 6px; font-weight: 600;}
+.url-status.ok  { background: var(--light-green); color: var(--primary-green-dark); font-weight: 600; padding: 10px; border-radius: 10px;}
+.url-status.err { background: #fee2e2; color: #b91c1c; font-weight: 600; padding: 10px; border-radius: 10px;}
 </style>
 </head>
 <body>
@@ -186,18 +243,18 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
 
 <div id="pageSetup">
   <div class="setup-card">
-    <div class="logo-circle" style="width:60px;height:60px;margin:0 auto 14px;">
-      <i class="bi bi-gear-fill" style="font-size:28px;color:#fff;"></i>
+    <div class="logo-circle">
+      <i class="bi bi-gear-fill"></i>
     </div>
     <div class="login-title">Pengaturan Awal</div>
-    <div class="login-sub" style="margin-bottom:20px;">
+    <div class="login-sub">
       Hubungkan aplikasi ke Google Sheets Anda
     </div>
 
     <div class="setup-step">
       <div class="setup-step-num">1</div>
       <div class="setup-step-text">
-        Buka <b><a href="https://script.google.com" target="_blank" style="color:var(--orange);">script.google.com</a></b>,
+        Buka <b><a href="https://script.google.com" target="_blank" style="color:var(--orange-accent);">script.google.com</a></b>,
         paste isi file <code>Code.gs</code>, lalu klik <b>Deploy → Deployment baru → Aplikasi web</b>.
         Atur akses: <b>"Semua orang"</b>.
       </div>
@@ -206,7 +263,7 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
       <div class="setup-step-num">2</div>
       <div class="setup-step-text">
         Setelah deploy selesai, salin <b>URL Aplikasi Web</b> yang tampil.<br>
-        Contoba format: <code>https://script.google.com/macros/s/AKfy.../exec</code>
+        Contoh format: <code>https://script.google.com/macros/s/AKfy.../exec</code>
       </div>
     </div>
     <div class="setup-step">
@@ -216,35 +273,34 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
       </div>
     </div>
 
-    <div class="mt-3 mb-2">
+    <div class="mt-4 mb-3">
       <label class="form-label" style="font-weight:700;">URL Google Apps Script</label>
-      <div class="input-group">
-        <input type="url" id="inpApiUrl" class="form-control"
-          placeholder="https://script.google.com/macros/s/.../exec"
-          style="font-size:.82rem;"/>
-        <button class="btn btn-outline-secondary" type="button" onclick="testApiUrl()"
-          title="Test koneksi" id="btnTestUrl">
+      <div class="input-group" style="border-radius: 14px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+        <input type="url" id="inpApiUrl" class="form-control border-0 bg-light"
+          placeholder="https://script.google.com/macros/s/.../exec" style="border-radius: 0;"/>
+        <button class="btn btn-secondary border-0" type="button" onclick="testApiUrl()"
+          title="Test koneksi" id="btnTestUrl" style="border-radius: 0; background: var(--soft-orange); color: var(--orange-dark);">
           <i class="bi bi-wifi"></i>
         </button>
       </div>
-      <div id="urlStatus" class="url-status" style="display:none;"></div>
+      <div id="urlStatus" class="url-status mt-2" style="display:none;"></div>
     </div>
 
-    <button class="btn-login mt-2" onclick="saveApiUrl()">
+    <button class="btn-main mt-2 w-100 py-3" onclick="saveApiUrl()">
       <i class="bi bi-check2-circle me-2"></i>Simpan &amp; Hubungkan
     </button>
 
     <div class="text-center mt-3">
-      <a href="#" onclick="skipSetup()" style="font-size:.78rem;color:#aaa;">
+      <a href="#" onclick="skipSetup()" style="font-size:0.85rem; color:var(--text-muted); font-weight: 500;">
         Lewati — gunakan mode demo (data tidak tersimpan ke Sheets)
       </a>
     </div>
 
-    <div id="existingUrlInfo" style="display:none;margin-top:16px;padding:10px 12px;
-      background:#FFF3EC;border-radius:8px;font-size:.78rem;color:#555;">
-      <i class="bi bi-info-circle me-1" style="color:var(--orange);"></i>
-      URL tersimpan sebelumnya: <span id="existingUrlText" style="color:var(--orange);word-break:break-all;"></span><br>
-      <a href="#" onclick="clearApiUrl()" style="color:#A32D2D;font-size:.75rem;">
+    <div id="existingUrlInfo" style="display:none; margin-top:20px; padding:16px;
+      background:var(--hover-green); border-radius:14px; font-size:0.8rem; color:var(--text-main); border: 1px solid #bbf7d0;">
+      <i class="bi bi-info-circle-fill me-1" style="color:var(--primary-green);"></i>
+      <b>URL tersimpan sebelumnya:</b> <br><span id="existingUrlText" style="color:var(--primary-green);word-break:break-all; display: inline-block; margin-top: 4px;"></span><br>
+      <a href="#" onclick="clearApiUrl()" style="color:#dc2626; font-size:0.8rem; display: inline-block; margin-top: 8px; font-weight: 600;">
         <i class="bi bi-trash me-1"></i>Hapus & ganti URL
       </a>
     </div>
@@ -258,24 +314,25 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
     </div>
     <div class="login-title" id="loginSchoolName">SDIT Gameel Akhlaq</div>
     <div class="login-sub">Sistem Administrasi Sekolah</div>
-    <div id="loginError" class="alert alert-danger py-2 d-none" style="font-size:.82rem;"></div>
+    <div id="loginError" class="alert alert-danger py-2 d-none" style="font-size:0.85rem; border-radius: 12px; font-weight: 500;"></div>
+    
     <div class="mb-3">
       <label class="form-label">Username</label>
       <input type="text" id="inpUsername" class="form-control" placeholder="admin / guru1" autocomplete="username"/>
     </div>
-    <div class="mb-3">
+    <div class="mb-4">
       <label class="form-label">Password</label>
       <input type="password" id="inpPassword" class="form-control" placeholder="pass123" autocomplete="current-password"/>
     </div>
-    <button class="btn-login" onclick="doLogin()">
-      <i class="bi bi-box-arrow-in-right me-2"></i>Masuk
+    <button class="btn-main btn-login" onclick="doLogin()">
+      <i class="bi bi-box-arrow-in-right me-2"></i>Masuk Dashboard
     </button>
 
-    <div id="apiStatusBar" style="margin-top:12px;padding:7px 12px;border-radius:8px;font-size:.75rem;text-align:center;"></div>
+    <div id="apiStatusBar" style="margin-top:16px; padding:10px 14px; border-radius:12px; font-size:0.8rem; font-weight: 600; text-align:center;"></div>
     
-    <div class="text-center mt-2" style="display: none;">
-      <a href="#" onclick="showSetupPage()" style="font-size:.76rem;color:var(--orange);text-decoration:none;">
-        <i class="bi bi-gear me-1"></i>Pengaturan URL Google Apps Script
+    <div class="text-center mt-3" style="display: none;">
+      <a href="#" onclick="showSetupPage()" style="font-size:0.85rem; color:var(--primary-green); font-weight: 600;">
+        <i class="bi bi-gear me-1"></i>Pengaturan URL Script
       </a>
     </div>
   </div>
@@ -293,7 +350,7 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
         <div class="brand-sub" id="sidebarRoleBadge">—</div>
       </div>
     </div>
-    <div id="navGuru">
+    <div id="navGuru" style="overflow-y: auto; overflow-x: hidden;">
       <div class="nav-section">Input Data</div>
       <a class="nav-link-item" onclick="showPage('jurnal-belajar')">
         <i class="bi bi-journal-text"></i>Jurnal Pembelajaran</a>
@@ -304,23 +361,23 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
       <a class="nav-link-item" onclick="showPage('prestasi-siswa')">
         <i class="bi bi-trophy"></i>Prestasi Siswa</a>
     </div>
-    <div id="navAdmin" style="display:none">
-      <div class="nav-section">Rekap</div>
+    <div id="navAdmin" style="display:none; overflow-y: auto; overflow-x: hidden;">
+      <div class="nav-section">Rekap Data</div>
       <a class="nav-link-item" onclick="showPage('rekap-belajar')">
-        <i class="bi bi-file-earmark-bar-graph"></i>Rekap Jurnal Belajar</a>
+        <i class="bi bi-file-earmark-bar-graph"></i>Jurnal Belajar</a>
       <a class="nav-link-item" onclick="showPage('rekap-nilai')">
-        <i class="bi bi-file-earmark-check"></i>Rekap Nilai Siswa</a>
+        <i class="bi bi-file-earmark-check"></i>Nilai Siswa</a>
       <a class="nav-link-item" onclick="showPage('rekap-pelatihan')">
-        <i class="bi bi-file-earmark-person"></i>Rekap Pelatihan</a>
+        <i class="bi bi-file-earmark-person"></i>Jurnal Pelatihan</a>
       <a class="nav-link-item" onclick="showPage('rekap-prestasi')">
-        <i class="bi bi-file-earmark-medal"></i>Rekap Prestasi</a>
-      <div class="nav-section">Kelola</div>
+        <i class="bi bi-file-earmark-medal"></i>Prestasi Siswa</a>
+      <div class="nav-section">Kelola Master</div>
       <a class="nav-link-item" onclick="showPage('data-guru')">
         <i class="bi bi-people"></i>Data Guru</a>
       <a class="nav-link-item" onclick="showPage('data-siswa')">
         <i class="bi bi-person-badge"></i>Data Siswa</a>
       <a class="nav-link-item" onclick="showPage('data-kelas')">
-        <i class="bi bi-door-open"></i>Kelas</a>
+        <i class="bi bi-door-open"></i>Data Kelas</a>
       <a class="nav-link-item" onclick="showPage('data-mapel')">
         <i class="bi bi-book"></i>Mata Pelajaran</a>
       <a class="nav-link-item" onclick="showPage('data-users')">
@@ -332,8 +389,8 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
         <i class="bi bi-link-45deg"></i>Ubah URL API</a>
     </div>
     <div class="sidebar-bottom">
-      <a class="nav-link-item" onclick="doLogout()">
-        <i class="bi bi-box-arrow-left"></i>Logout</a>
+      <a class="nav-link-item" onclick="doLogout()" style="color: #ef4444;">
+        <i class="bi bi-box-arrow-left" style="color: #ef4444;"></i>Logout Account</a>
     </div>
   </aside>
 
@@ -341,7 +398,7 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
     <div class="topbar">
       <button class="hamburger" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
       <div class="topbar-title" id="topbarTitle">Dashboard</div>
-      <div class="user-chip">
+      <div class="user-chip shadow-sm">
         <div class="user-avatar" id="userAvatar">AD</div>
         <span id="userNameChip">Administrator</span>
       </div>
@@ -350,7 +407,7 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
 
       <div class="page-section" id="sec-jurnal-belajar">
         <div class="section-card">
-          <div class="section-card-title"><i class="bi bi-journal-text text-warning me-2"></i>Input Jurnal Pembelajaran</div>
+          <div class="section-card-title"><i class="bi bi-journal-text"></i>Input Jurnal Pembelajaran</div>
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label">Tanggal</label>
@@ -373,7 +430,7 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
             </div>
             <div class="col-md-3">
               <label class="form-label">Jam Masuk <span class="badge-auto">otomatis</span></label>
-              <input type="text" class="form-control" disabled value="Terisi saat simpan"/>
+              <input type="text" class="form-control" disabled value="Terisi otomatis"/>
             </div>
             <div class="col-md-6">
               <label class="form-label">Metode</label>
@@ -399,10 +456,10 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
               <label class="form-label">Catatan</label>
               <textarea id="jb_catatan" class="form-control" rows="2" placeholder="Catatan tambahan (opsional)"></textarea>
             </div>
-            <div class="col-12 text-end">
-              <button class="btn btn-secondary me-2" onclick="resetForm('jb')">Reset</button>
+            <div class="col-12 text-end mt-4">
+              <button class="btn btn-secondary me-2" onclick="resetForm('jb')">Reset Form</button>
               <button class="btn-orange" onclick="submitJurnalBelajar()">
-                <i class="bi bi-cloud-upload me-1"></i>Simpan ke Sheets
+                <i class="bi bi-cloud-upload me-2"></i>Simpan ke Database
               </button>
             </div>
           </div>
@@ -411,7 +468,7 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
 
       <div class="page-section" id="sec-input-nilai">
         <div class="section-card">
-          <div class="section-card-title"><i class="bi bi-journal-check text-primary me-2"></i>Input Nilai Siswa (Kolektif)</div>
+          <div class="section-card-title"><i class="bi bi-journal-check"></i>Input Nilai Siswa (Kolektif)</div>
           
           <div class="row g-3">
             <div class="col-md-3">
@@ -430,44 +487,44 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
             </div>
             <div class="col-md-3">
               <label class="form-label">Jenis Penilaian</label>
-         <select id="ni_jenis" class="form-select">
-  <optgroup label="Tugas">
-    <option value="Tugas 1">Tugas 1</option>
-    <option value="Tugas 2">Tugas 2</option>
-    <option value="Tugas 3">Tugas 3</option>
-    <option value="Tugas 4">Tugas 4</option>
-    <option value="Tugas 5">Tugas 5</option>
-    <option value="Tugas 6">Tugas 6</option>
-  </optgroup>
-  <optgroup label="Ulangan Harian (UH)">
-    <option value="UH 1">UH 1</option>
-    <option value="UH 2">UH 2</option>
-    <option value="UH 3">UH 3</option>
-    <option value="UH 4">UH 4</option>
-    <option value="UH 5">UH 5</option>
-    <option value="UH 6">UH 6</option>
-  </optgroup>
-  <optgroup label="Ujian Utama">
-    <option value="UTS">UTS / PTS</option>
-    <option value="UAS">UAS / PAS</option>
-  </optgroup>
-  <optgroup label="Lainnya">
-    <option value="Praktek 1">Praktek 1</option>
-    <option value="Praktek 2">Praktek 2</option>
-  </optgroup>
-</select>>
+              <select id="ni_jenis" class="form-select">
+                <optgroup label="Tugas">
+                  <option value="Tugas 1">Tugas 1</option>
+                  <option value="Tugas 2">Tugas 2</option>
+                  <option value="Tugas 3">Tugas 3</option>
+                  <option value="Tugas 4">Tugas 4</option>
+                  <option value="Tugas 5">Tugas 5</option>
+                  <option value="Tugas 6">Tugas 6</option>
+                </optgroup>
+                <optgroup label="Ulangan Harian (UH)">
+                  <option value="UH 1">UH 1</option>
+                  <option value="UH 2">UH 2</option>
+                  <option value="UH 3">UH 3</option>
+                  <option value="UH 4">UH 4</option>
+                  <option value="UH 5">UH 5</option>
+                  <option value="UH 6">UH 6</option>
+                </optgroup>
+                <optgroup label="Ujian Utama">
+                  <option value="UTS">UTS / PTS</option>
+                  <option value="UAS">UAS / PAS</option>
+                </optgroup>
+                <optgroup label="Lainnya">
+                  <option value="Praktek 1">Praktek 1</option>
+                  <option value="Praktek 2">Praktek 2</option>
+                </optgroup>
+              </select>
             </div>
-            <div class="col-12 text-end">
+            <div class="col-12 text-end mt-4">
               <button class="btn btn-secondary me-2" onclick="resetFormNilaiBulk()">Reset Pilihan</button>
-              <button class="btn btn-primary" onclick="tampilkanDaftarSiswaNilai()">
-                <i class="bi bi-list-check me-1"></i>Tampilkan Daftar Siswa
+              <button class="btn btn-orange" onclick="tampilkanDaftarSiswaNilai()">
+                <i class="bi bi-list-check me-2"></i>Tampilkan Daftar Siswa
               </button>
             </div>
           </div>
 
-          <div id="container-bulk-nilai" style="display:none; margin-top:25px; border-top: 1px solid #eee; padding-top: 20px;">
-             <h6 class="mb-3 fw-bold text-secondary">Daftar Siswa untuk Input Nilai</h6>
-             <div class="table-responsive">
+          <div id="container-bulk-nilai" style="display:none; margin-top:35px; border-top: 1px solid var(--border-color); padding-top: 25px;">
+             <h6 class="mb-3 fw-bold text-main" style="color: var(--primary-green);">Daftar Siswa untuk Input Nilai</h6>
+             <div class="table-responsive shadow-sm">
                <table class="table table-bordered align-middle table-hover">
                  <thead class="table-light">
                    <tr>
@@ -478,63 +535,62 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
                      <th width="30%">Catatan (Opsional)</th>
                    </tr>
                  </thead>
-                 <tbody id="tbodySiswaBulk">
-                     </tbody>
+                 <tbody id="tbodySiswaBulk"></tbody>
                </table>
              </div>
-             <div class="alert alert-info py-2" style="font-size: 0.8rem;">
-               <i class="bi bi-info-circle me-1"></i> Siswa yang kolom nilainya dikosongkan <b>tidak akan</b> disimpan.
+             <div class="alert mt-3" style="background: var(--light-green); color: var(--primary-green-dark); border: 1px solid #bbf7d0; border-radius: 12px; font-size: 0.85rem; font-weight: 500;">
+               <i class="bi bi-info-circle-fill me-2"></i> Siswa yang kolom nilainya dikosongkan <b>tidak akan</b> disimpan ke database.
              </div>
-             <div class="text-end mt-3">
-                <button class="btn-orange btn-lg w-100" onclick="submitNilaiBulk()" id="btnSubmitNilaiBulk">
-                  <i class="bi bi-cloud-upload me-2"></i>Simpan Semua Nilai
+             <div class="text-end mt-4">
+                <button class="btn-orange btn-lg w-100 py-3" onclick="submitNilaiBulk()" id="btnSubmitNilaiBulk" style="font-size: 1.05rem;">
+                  <i class="bi bi-cloud-upload me-2"></i>Simpan Semua Nilai ke Database
                 </button>
              </div>
           </div>
         </div>
 
         <div class="section-card">
-          <div class="section-card-title">Riwayat Input Nilai (Hanya Kelas/Siswa yang dinilai)</div>
+          <div class="section-card-title"><i class="bi bi-clock-history"></i>Riwayat Input Nilai Anda</div>
           <div class="filter-bar">
-            <select id="fNiBulan_Guru" class="form-select form-select-sm" style="width:120px;" onchange="filterNilaiGuru()">
+            <select id="fNiBulan_Guru" class="form-select form-select-sm" style="width:140px;" onchange="filterNilaiGuru()">
               <option value="">Semua Bulan</option>
               <option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option>
               <option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option>
               <option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option>
               <option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option>
             </select>
-            <select id="fNiKelas_Guru" class="form-select form-select-sm" style="width:130px;" onchange="filterNilaiGuru()">
+            <select id="fNiKelas_Guru" class="form-select form-select-sm" style="width:140px;" onchange="filterNilaiGuru()">
               <option value="">Semua Kelas</option>
             </select>
-            <select id="fNiJenis_Guru" class="form-select form-select-sm" style="width:140px;" onchange="filterNilaiGuru()">
-  <option value="">Semua Jenis</option>
-  <option value="Tugas 1">Tugas 1</option>
-  <option value="Tugas 2">Tugas 2</option>
-  <option value="Tugas 3">Tugas 3</option>
-  <option value="Tugas 4">Tugas 4</option>
-  <option value="Tugas 5">Tugas 5</option>
-  <option value="Tugas 6">Tugas 6</option>
-  <option value="UH 1">UH 1</option>
-  <option value="UH 2">UH 2</option>
-  <option value="UH 3">UH 3</option>
-  <option value="UH 4">UH 4</option>
-  <option value="UH 5">UH 5</option>
-  <option value="UH 6">UH 6</option>
-  <option value="UTS">UTS / PTS</option>
-  <option value="UAS">UAS / PAS</option>
-  <option value="Praktek 1">Praktek 1</option>
-  <option value="Praktek 2">Praktek 2</option>
-</select>
+            <select id="fNiJenis_Guru" class="form-select form-select-sm" style="width:160px;" onchange="filterNilaiGuru()">
+              <option value="">Semua Jenis</option>
+              <option value="Tugas 1">Tugas 1</option>
+              <option value="Tugas 2">Tugas 2</option>
+              <option value="Tugas 3">Tugas 3</option>
+              <option value="Tugas 4">Tugas 4</option>
+              <option value="Tugas 5">Tugas 5</option>
+              <option value="Tugas 6">Tugas 6</option>
+              <option value="UH 1">UH 1</option>
+              <option value="UH 2">UH 2</option>
+              <option value="UH 3">UH 3</option>
+              <option value="UH 4">UH 4</option>
+              <option value="UH 5">UH 5</option>
+              <option value="UH 6">UH 6</option>
+              <option value="UTS">UTS / PTS</option>
+              <option value="UAS">UAS / PAS</option>
+              <option value="Praktek 1">Praktek 1</option>
+              <option value="Praktek 2">Praktek 2</option>
+            </select>
             <div class="ms-auto d-flex gap-2">
-              <button class="btn-dl-pdf" onclick="downloadPDF('nilai-guru')">
-                <i class="bi bi-file-earmark-pdf-fill"></i>PDF
+              <button class="btn-dl-pdf shadow-sm" onclick="downloadPDF('nilai-guru')">
+                <i class="bi bi-file-earmark-pdf-fill"></i>Cetak PDF
               </button>
-              <button class="btn-dl-xls" onclick="downloadExcel('nilai-guru')">
-                <i class="bi bi-file-earmark-spreadsheet-fill"></i>Excel
+              <button class="btn-dl-xls shadow-sm" onclick="downloadExcel('nilai-guru')">
+                <i class="bi bi-file-earmark-spreadsheet-fill"></i>Export Excel
               </button>
             </div>
           </div>
-          <div class="table-responsive">
+          <div class="table-responsive shadow-sm">
             <table class="table table-hover align-middle">
               <thead>
                 <tr>
@@ -549,49 +605,50 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
 
       <div class="page-section" id="sec-rekap-nilai">
         <div class="section-card">
+          <div class="section-card-title"><i class="bi bi-file-earmark-check"></i>Rekapitulasi Nilai Seluruh Siswa</div>
           <div class="filter-bar">
-            <select id="fNiBulan" class="form-select form-select-sm" style="width:120px;" onchange="filterNilaiAdmin()">
+            <select id="fNiBulan" class="form-select form-select-sm" style="width:130px;" onchange="filterNilaiAdmin()">
               <option value="">Semua Bulan</option>
               <option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option>
               <option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option>
               <option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option>
               <option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option>
             </select>
-            <select id="fNiKelas" class="form-select form-select-sm" style="width:130px;" onchange="filterNilaiAdmin()">
+            <select id="fNiKelas" class="form-select form-select-sm" style="width:140px;" onchange="filterNilaiAdmin()">
               <option value="">Semua Kelas</option>
             </select>
-            <select id="fNiMapel" class="form-select form-select-sm" style="width:160px;" onchange="filterNilaiAdmin()">
+            <select id="fNiMapel" class="form-select form-select-sm" style="width:170px;" onchange="filterNilaiAdmin()">
               <option value="">Semua Mapel</option>
             </select>
-            <select id="fNiJenis" class="form-select form-select-sm" style="width:140px;" onchange="filterNilaiAdmin()">
-  <option value="">Semua Jenis</option>
-  <option value="Tugas 1">Tugas 1</option>
-  <option value="Tugas 2">Tugas 2</option>
-  <option value="Tugas 3">Tugas 3</option>
-  <option value="Tugas 4">Tugas 4</option>
-  <option value="Tugas 5">Tugas 5</option>
-  <option value="Tugas 6">Tugas 6</option>
-  <option value="UH 1">UH 1</option>
-  <option value="UH 2">UH 2</option>
-  <option value="UH 3">UH 3</option>
-  <option value="UH 4">UH 4</option>
-  <option value="UH 5">UH 5</option>
-  <option value="UH 6">UH 6</option>
-  <option value="UTS">UTS / PTS</option>
-  <option value="UAS">UAS / PAS</option>
-  <option value="Praktek 1">Praktek 1</option>
-  <option value="Praktek 2">Praktek 2</option>
-</select>
+            <select id="fNiJenis" class="form-select form-select-sm" style="width:150px;" onchange="filterNilaiAdmin()">
+              <option value="">Semua Jenis</option>
+              <option value="Tugas 1">Tugas 1</option>
+              <option value="Tugas 2">Tugas 2</option>
+              <option value="Tugas 3">Tugas 3</option>
+              <option value="Tugas 4">Tugas 4</option>
+              <option value="Tugas 5">Tugas 5</option>
+              <option value="Tugas 6">Tugas 6</option>
+              <option value="UH 1">UH 1</option>
+              <option value="UH 2">UH 2</option>
+              <option value="UH 3">UH 3</option>
+              <option value="UH 4">UH 4</option>
+              <option value="UH 5">UH 5</option>
+              <option value="UH 6">UH 6</option>
+              <option value="UTS">UTS / PTS</option>
+              <option value="UAS">UAS / PAS</option>
+              <option value="Praktek 1">Praktek 1</option>
+              <option value="Praktek 2">Praktek 2</option>
+            </select>
             <div class="ms-auto d-flex gap-2">
-              <button class="btn-dl-pdf" onclick="downloadPDF('nilai-admin')">
-                <i class="bi bi-file-earmark-pdf-fill"></i>PDF
+              <button class="btn-dl-pdf shadow-sm" onclick="downloadPDF('nilai-admin')">
+                <i class="bi bi-file-earmark-pdf-fill"></i>Cetak PDF
               </button>
-              <button class="btn-dl-xls" onclick="downloadExcel('nilai-admin')">
-                <i class="bi bi-file-earmark-spreadsheet-fill"></i>Excel
+              <button class="btn-dl-xls shadow-sm" onclick="downloadExcel('nilai-admin')">
+                <i class="bi bi-file-earmark-spreadsheet-fill"></i>Export Excel
               </button>
             </div>
           </div>
-          <div class="table-responsive">
+          <div class="table-responsive shadow-sm">
             <table class="table table-hover align-middle">
               <thead>
                 <tr>
@@ -606,7 +663,7 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
 
       <div class="page-section" id="sec-jurnal-pelatihan">
         <div class="section-card">
-          <div class="section-card-title"><i class="bi bi-award text-success me-2"></i>Input Jurnal Pelatihan</div>
+          <div class="section-card-title"><i class="bi bi-award"></i>Input Jurnal Pelatihan</div>
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label">Tanggal</label>
@@ -635,10 +692,10 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
               <label class="form-label">Catatan</label>
               <textarea id="jp_catatan" class="form-control" rows="2" placeholder="Catatan tambahan (opsional)"></textarea>
             </div>
-            <div class="col-12 text-end">
-              <button class="btn btn-secondary me-2" onclick="resetForm('jp')">Reset</button>
+            <div class="col-12 text-end mt-4">
+              <button class="btn btn-secondary me-2" onclick="resetForm('jp')">Reset Form</button>
               <button class="btn-orange" onclick="submitJurnalPelatihan()">
-                <i class="bi bi-cloud-upload me-1"></i>Simpan ke Sheets
+                <i class="bi bi-cloud-upload me-2"></i>Simpan ke Database
               </button>
             </div>
           </div>
@@ -647,19 +704,19 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
 
       <div class="page-section" id="sec-prestasi-siswa">
         <div class="section-card">
-          <div class="section-card-title"><i class="bi bi-trophy text-warning me-2"></i>Input Prestasi Siswa</div>
+          <div class="section-card-title"><i class="bi bi-trophy"></i>Input Prestasi Siswa</div>
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label">Tanggal</label>
               <input type="date" id="ps_tanggal" class="form-control"/>
             </div>
-            <div class="col-md-6">
-              <label class="form-label">Cari Siswa <span class="badge-auto">autocomplete</span></label>
+            <div class="col-md-6 position-relative">
+              <label class="form-label">Cari Siswa <span class="badge-auto">Ketik untuk mencari</span></label>
               <input type="text" id="ps_siswa_search" class="form-control" placeholder="Ketik nama atau NISN..." autocomplete="off"/>
               <input type="hidden" id="ps_nisn"/>
               <input type="hidden" id="ps_nama_siswa"/>
               <input type="hidden" id="ps_kelas_siswa"/>
-              <div id="ps_siswa_dropdown" class="list-group" style="position:absolute;z-index:200;width:94%;display:none;max-height:180px;overflow-y:auto;"></div>
+              <div id="ps_siswa_dropdown" class="list-group shadow" style="position:absolute; z-index:200; width:96%; display:none; max-height:220px; overflow-y:auto; border-radius: 12px; border: 1px solid var(--border-color);"></div>
             </div>
             <div class="col-md-6">
               <label class="form-label">Jenis Prestasi</label>
@@ -683,17 +740,17 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
               </select>
             </div>
             <div class="col-md-6">
-              <label class="form-label">Nama Lomba</label>
+              <label class="form-label">Nama Lomba / Acara</label>
               <input type="text" id="ps_nama_lomba" class="form-control" placeholder="Nama kegiatan/lomba"/>
             </div>
             <div class="col-12">
               <label class="form-label">Catatan</label>
               <textarea id="ps_catatan" class="form-control" rows="2"></textarea>
             </div>
-            <div class="col-12 text-end">
-              <button class="btn btn-secondary me-2" onclick="resetForm('ps')">Reset</button>
+            <div class="col-12 text-end mt-4">
+              <button class="btn btn-secondary me-2" onclick="resetForm('ps')">Reset Form</button>
               <button class="btn-orange" onclick="submitPrestasi()">
-                <i class="bi bi-cloud-upload me-1"></i>Simpan ke Sheets
+                <i class="bi bi-cloud-upload me-2"></i>Simpan ke Database
               </button>
             </div>
           </div>
@@ -701,27 +758,33 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
       </div>
 
       <div class="page-section" id="sec-rekap-belajar">
-        <div class="row g-3 mb-3" id="statsRowBelajar">
-          <div class="col-6 col-md-3"><div class="card-stat p-3">
+        <div class="row g-3 mb-4" id="statsRowBelajar">
+          <div class="col-6 col-md-3"><div class="card-stat p-4 text-center">
+            <i class="bi bi-journals mb-2 d-block" style="font-size: 2rem; color: var(--light-green); color: var(--primary-green);"></i>
             <div class="stat-label">Total Jurnal</div>
             <div class="stat-val" id="st_jb_total">0</div>
           </div></div>
-          <div class="col-6 col-md-3"><div class="card-stat p-3">
+          <div class="col-6 col-md-3"><div class="card-stat p-4 text-center">
+            <i class="bi bi-calendar-check mb-2 d-block" style="font-size: 2rem; color: var(--orange-accent);"></i>
             <div class="stat-label">Bulan Ini</div>
             <div class="stat-val" id="st_jb_bulan">0</div>
           </div></div>
-          <div class="col-6 col-md-3"><div class="card-stat p-3">
+          <div class="col-6 col-md-3"><div class="card-stat p-4 text-center">
+            <i class="bi bi-person-video3 mb-2 d-block" style="font-size: 2rem; color: #0284c7;"></i>
             <div class="stat-label">Guru Aktif</div>
             <div class="stat-val" id="st_jb_guru">0</div>
           </div></div>
-          <div class="col-6 col-md-3"><div class="card-stat p-3">
+          <div class="col-6 col-md-3"><div class="card-stat p-4 text-center">
+            <i class="bi bi-person-dash mb-2 d-block" style="font-size: 2rem; color: #dc2626;"></i>
             <div class="stat-label">Status Inval</div>
             <div class="stat-val" id="st_jb_inval">0</div>
           </div></div>
         </div>
+        
         <div class="section-card">
+          <div class="section-card-title"><i class="bi bi-file-earmark-bar-graph"></i>Laporan Jurnal Belajar</div>
           <div class="filter-bar">
-            <select id="fJbBulan" class="form-select form-select-sm" style="width:120px;" onchange="filterJurnalBelajar()">
+            <select id="fJbBulan" class="form-select form-select-sm" style="width:140px;" onchange="filterJurnalBelajar()">
               <option value="">Semua Bulan</option>
               <option value="01">Januari</option><option value="02">Februari</option>
               <option value="03">Maret</option><option value="04">April</option>
@@ -730,25 +793,25 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
               <option value="09">September</option><option value="10">Oktober</option>
               <option value="11">November</option><option value="12">Desember</option>
             </select>
-            <select id="fJbKelas" class="form-select form-select-sm" style="width:130px;" onchange="filterJurnalBelajar()">
+            <select id="fJbKelas" class="form-select form-select-sm" style="width:140px;" onchange="filterJurnalBelajar()">
               <option value="">Semua Kelas</option>
             </select>
-            <select id="fJbGuru" class="form-select form-select-sm" style="width:160px;" onchange="filterJurnalBelajar()">
+            <select id="fJbGuru" class="form-select form-select-sm" style="width:180px;" onchange="filterJurnalBelajar()">
               <option value="">Semua Guru</option>
             </select>
-            <select id="fJbMapel" class="form-select form-select-sm" style="width:160px;" onchange="filterJurnalBelajar()">
+            <select id="fJbMapel" class="form-select form-select-sm" style="width:180px;" onchange="filterJurnalBelajar()">
               <option value="">Semua Mapel</option>
             </select>
             <div class="ms-auto d-flex gap-2">
-              <button class="btn-dl-pdf" onclick="downloadPDF('jurnal-belajar')">
-                <i class="bi bi-file-earmark-pdf-fill"></i>PDF
+              <button class="btn-dl-pdf shadow-sm" onclick="downloadPDF('jurnal-belajar')">
+                <i class="bi bi-file-earmark-pdf-fill"></i>Cetak PDF
               </button>
-              <button class="btn-dl-xls" onclick="downloadExcel('jurnal-belajar')">
-                <i class="bi bi-file-earmark-spreadsheet-fill"></i>Excel
+              <button class="btn-dl-xls shadow-sm" onclick="downloadExcel('jurnal-belajar')">
+                <i class="bi bi-file-earmark-spreadsheet-fill"></i>Export Excel
               </button>
             </div>
           </div>
-          <div class="table-responsive">
+          <div class="table-responsive shadow-sm">
             <table class="table table-hover align-middle" id="tblJurnalBelajar">
               <thead>
                 <tr>
@@ -765,8 +828,9 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
 
       <div class="page-section" id="sec-rekap-pelatihan">
         <div class="section-card">
+          <div class="section-card-title"><i class="bi bi-file-earmark-person"></i>Laporan Pelatihan Guru</div>
           <div class="filter-bar">
-            <select id="fJpBulan" class="form-select form-select-sm" style="width:120px;" onchange="filterPelatihan()">
+            <select id="fJpBulan" class="form-select form-select-sm" style="width:140px;" onchange="filterPelatihan()">
               <option value="">Semua Bulan</option>
               <option value="01">Januari</option><option value="02">Februari</option>
               <option value="03">Maret</option><option value="04">April</option>
@@ -775,24 +839,24 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
               <option value="09">September</option><option value="10">Oktober</option>
               <option value="11">November</option><option value="12">Desember</option>
             </select>
-            <select id="fJpGuru" class="form-select form-select-sm" style="width:160px;" onchange="filterPelatihan()">
+            <select id="fJpGuru" class="form-select form-select-sm" style="width:180px;" onchange="filterPelatihan()">
               <option value="">Semua Guru</option>
             </select>
             <div class="ms-auto d-flex gap-2">
-              <button class="btn-dl-pdf" onclick="downloadPDF('pelatihan')">
-                <i class="bi bi-file-earmark-pdf-fill"></i>PDF
+              <button class="btn-dl-pdf shadow-sm" onclick="downloadPDF('pelatihan')">
+                <i class="bi bi-file-earmark-pdf-fill"></i>Cetak PDF
               </button>
-              <button class="btn-dl-xls" onclick="downloadExcel('pelatihan')">
-                <i class="bi bi-file-earmark-spreadsheet-fill"></i>Excel
+              <button class="btn-dl-xls shadow-sm" onclick="downloadExcel('pelatihan')">
+                <i class="bi bi-file-earmark-spreadsheet-fill"></i>Export Excel
               </button>
             </div>
           </div>
-          <div class="table-responsive">
+          <div class="table-responsive shadow-sm">
             <table class="table table-hover align-middle">
               <thead>
                 <tr>
                   <th>Tanggal</th><th>Nama Pelatihan</th><th>Penyelenggara</th>
-                  <th>Guru</th><th>Durasi</th><th>Sertifikat</th>
+                  <th>Guru Peserta</th><th>Durasi</th><th>Sertifikat</th>
                 </tr>
               </thead>
               <tbody id="tbodyPelatihan"></tbody>
@@ -803,8 +867,9 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
 
       <div class="page-section" id="sec-rekap-prestasi">
         <div class="section-card">
+          <div class="section-card-title"><i class="bi bi-file-earmark-medal"></i>Laporan Prestasi Siswa</div>
           <div class="filter-bar">
-            <select id="fPsBulan" class="form-select form-select-sm" style="width:120px;" onchange="filterPrestasi()">
+            <select id="fPsBulan" class="form-select form-select-sm" style="width:140px;" onchange="filterPrestasi()">
               <option value="">Semua Bulan</option>
               <option value="01">Januari</option><option value="02">Februari</option>
               <option value="03">Maret</option><option value="04">April</option>
@@ -813,24 +878,24 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
               <option value="09">September</option><option value="10">Oktober</option>
               <option value="11">November</option><option value="12">Desember</option>
             </select>
-            <select id="fPsKelas" class="form-select form-select-sm" style="width:120px;" onchange="filterPrestasi()">
+            <select id="fPsKelas" class="form-select form-select-sm" style="width:140px;" onchange="filterPrestasi()">
               <option value="">Semua Kelas</option>
             </select>
             <div class="ms-auto d-flex gap-2">
-              <button class="btn-dl-pdf" onclick="downloadPDF('prestasi')">
-                <i class="bi bi-file-earmark-pdf-fill"></i>PDF
+              <button class="btn-dl-pdf shadow-sm" onclick="downloadPDF('prestasi')">
+                <i class="bi bi-file-earmark-pdf-fill"></i>Cetak PDF
               </button>
-              <button class="btn-dl-xls" onclick="downloadExcel('prestasi')">
-                <i class="bi bi-file-earmark-spreadsheet-fill"></i>Excel
+              <button class="btn-dl-xls shadow-sm" onclick="downloadExcel('prestasi')">
+                <i class="bi bi-file-earmark-spreadsheet-fill"></i>Export Excel
               </button>
             </div>
           </div>
-          <div class="table-responsive">
+          <div class="table-responsive shadow-sm">
             <table class="table table-hover align-middle">
               <thead>
                 <tr>
                   <th>Tanggal</th><th>Nama Siswa</th><th>Kelas</th>
-                  <th>Lomba</th><th>Tingkat</th><th>Peringkat</th>
+                  <th>Nama Lomba</th><th>Tingkat</th><th>Peringkat</th>
                 </tr>
               </thead>
               <tbody id="tbodyPrestasi"></tbody>
@@ -841,16 +906,16 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
 
       <div class="page-section" id="sec-data-guru">
         <div class="section-card">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <div class="section-card-title mb-0">Daftar Guru</div>
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="section-card-title mb-0"><i class="bi bi-people"></i>Daftar Guru</div>
             <button class="btn-orange" onclick="openModal('guru')">
-              <i class="bi bi-plus-lg me-1"></i>Tambah
+              <i class="bi bi-plus-lg me-1"></i>Tambah Guru
             </button>
           </div>
-          <div class="table-responsive">
-            <table class="table table-hover">
+          <div class="table-responsive shadow-sm">
+            <table class="table table-hover align-middle">
               <thead><tr>
-                <th>ID</th><th>Nama</th><th>NIP</th><th>Mata Pelajaran</th><th>No HP</th><th>Aksi</th>
+                <th>ID</th><th>Nama Lengkap</th><th>NIP</th><th>Mata Pelajaran</th><th>No HP</th><th>Aksi</th>
               </tr></thead>
               <tbody id="tbodyGuru"></tbody>
             </table>
@@ -860,16 +925,16 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
 
       <div class="page-section" id="sec-data-siswa">
         <div class="section-card">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <div class="section-card-title mb-0">Data Siswa</div>
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="section-card-title mb-0"><i class="bi bi-person-badge"></i>Data Siswa</div>
             <button class="btn-orange" onclick="openModal('siswa')">
-              <i class="bi bi-plus-lg me-1"></i>Tambah
+              <i class="bi bi-plus-lg me-1"></i>Tambah Siswa
             </button>
           </div>
-          <div class="table-responsive">
-            <table class="table table-hover">
+          <div class="table-responsive shadow-sm">
+            <table class="table table-hover align-middle">
               <thead><tr>
-                <th>NISN</th><th>Nama</th><th>Kelas</th><th>JK</th><th>No HP Ortu</th><th>Aksi</th>
+                <th>NISN</th><th>Nama Siswa</th><th>Kelas</th><th>L/P</th><th>No HP Ortu</th><th>Aksi</th>
               </tr></thead>
               <tbody id="tbodySiswa"></tbody>
             </table>
@@ -879,14 +944,14 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
 
       <div class="page-section" id="sec-data-kelas">
         <div class="section-card">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <div class="section-card-title mb-0">Data Kelas</div>
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="section-card-title mb-0"><i class="bi bi-door-open"></i>Data Kelas</div>
             <button class="btn-orange" onclick="openModal('kelas')">
-              <i class="bi bi-plus-lg me-1"></i>Tambah
+              <i class="bi bi-plus-lg me-1"></i>Tambah Kelas
             </button>
           </div>
-          <div class="table-responsive">
-            <table class="table table-hover">
+          <div class="table-responsive shadow-sm">
+            <table class="table table-hover align-middle">
               <thead><tr>
                 <th>ID</th><th>Nama Kelas</th><th>Tingkat</th><th>Wali Kelas</th><th>Aksi</th>
               </tr></thead>
@@ -898,16 +963,16 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
 
       <div class="page-section" id="sec-data-mapel">
         <div class="section-card">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <div class="section-card-title mb-0">Mata Pelajaran</div>
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="section-card-title mb-0"><i class="bi bi-book"></i>Mata Pelajaran</div>
             <button class="btn-orange" onclick="openModal('mapel')">
-              <i class="bi bi-plus-lg me-1"></i>Tambah
+              <i class="bi bi-plus-lg me-1"></i>Tambah Mapel
             </button>
           </div>
-          <div class="table-responsive">
-            <table class="table table-hover">
+          <div class="table-responsive shadow-sm">
+            <table class="table table-hover align-middle">
               <thead><tr>
-                <th>ID</th><th>Nama Mapel</th><th>Kode</th><th>Aksi</th>
+                <th>ID</th><th>Nama Mata Pelajaran</th><th>Kode</th><th>Aksi</th>
               </tr></thead>
               <tbody id="tbodyMapel"></tbody>
             </table>
@@ -917,16 +982,16 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
 
       <div class="page-section" id="sec-data-users">
         <div class="section-card">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <div class="section-card-title mb-0">Akun Users</div>
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="section-card-title mb-0"><i class="bi bi-person-lock"></i>Akun Pengguna Sistem</div>
             <button class="btn-orange" onclick="openModal('users')">
-              <i class="bi bi-plus-lg me-1"></i>Tambah
+              <i class="bi bi-plus-lg me-1"></i>Tambah Akun
             </button>
           </div>
-          <div class="table-responsive">
-            <table class="table table-hover">
+          <div class="table-responsive shadow-sm">
+            <table class="table table-hover align-middle">
               <thead><tr>
-                <th>Username</th><th>Nama Lengkap</th><th>Role</th><th>Aksi</th>
+                <th>Username</th><th>Nama Lengkap</th><th>Hak Akses</th><th>Aksi</th>
               </tr></thead>
               <tbody id="tbodyUsers"></tbody>
             </table>
@@ -935,44 +1000,42 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
       </div>
 
       <div class="page-section" id="sec-konfigurasi">
-        <div class="section-card" style="max-width:600px;">
+        <div class="section-card" style="max-width:700px;">
           <div class="section-card-title">
-            <i class="bi bi-gear me-2"></i>Konfigurasi Sekolah
+            <i class="bi bi-gear"></i>Konfigurasi Profil Sekolah
           </div>
-          <div class="row g-3">
+          <div class="row g-4 mt-1">
             <div class="col-12">
-              <label class="form-label">Nama Sekolah</label>
-              <input type="text" id="cfg_nama" class="form-control"/>
+              <label class="form-label">Nama Sekolah Lengkap</label>
+              <input type="text" id="cfg_nama" class="form-control" style="height: 50px; font-weight: 500;"/>
             </div>
-            <div class="col-12">
+            <div class="col-md-6">
               <label class="form-label">Nama Kepala Sekolah</label>
               <input type="text" id="cfg_kepsek" class="form-control"/>
             </div>
+            <div class="col-md-6">
+              <label class="form-label">Tahun Ajaran Aktif</label>
+              <input type="text" id="cfg_tahun" class="form-control" placeholder="Contoh: 2024/2025"/>
+            </div>
             <div class="col-12">
-              <label class="form-label">Logo Sekolah
-                <span class="badge-auto">Base64 / URL</span>
-              </label>
-              <div class="d-flex align-items-center gap-3 mb-2">
-                <div id="logoPreview" style="width:60px;height:60px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;">
-                  <i class="bi bi-mortarboard-fill" style="font-size:28px;color:#fff;"></i>
+              <label class="form-label">Logo Sekolah</label>
+              <div class="d-flex align-items-center gap-4 mt-2 p-3" style="border: 1px dashed var(--border-color); border-radius: 16px; background: #f8fafc;">
+                <div id="logoPreview" style="width:70px; height:70px; border-radius:16px; background:var(--light-green); display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                  <i class="bi bi-mortarboard-fill" style="font-size:32px; color:var(--primary-green);"></i>
                 </div>
                 <div>
                   <input type="file" id="cfg_logo_file" accept="image/*" onchange="handleLogoUpload(this)" style="display:none;"/>
-                  <button class="btn btn-outline-secondary btn-sm" onclick="document.getElementById('cfg_logo_file').click()">
-                    <i class="bi bi-upload me-1"></i>Upload Logo
+                  <button class="btn btn-secondary btn-sm px-3" onclick="document.getElementById('cfg_logo_file').click()">
+                    <i class="bi bi-upload me-2"></i>Pilih File Logo Baru
                   </button>
-                  <div style="font-size:.72rem;color:#aaa;margin-top:4px;">JPG/PNG, maks 200KB</div>
+                  <div style="font-size:0.75rem; color:var(--text-muted); margin-top:8px;">Format JPG/PNG, ukuran maksimal 200KB</div>
                 </div>
               </div>
               <input type="hidden" id="cfg_logo_base64"/>
             </div>
-            <div class="col-12">
-              <label class="form-label">Tahun Ajaran</label>
-              <input type="text" id="cfg_tahun" class="form-control" placeholder="2024/2025"/>
-            </div>
-            <div class="col-12 text-end">
-              <button class="btn-orange" onclick="saveKonfigurasi()">
-                <i class="bi bi-floppy me-1"></i>Simpan Konfigurasi
+            <div class="col-12 text-end mt-4">
+              <button class="btn-orange px-4 py-2" onclick="saveKonfigurasi()">
+                <i class="bi bi-floppy me-2"></i>Simpan Konfigurasi
               </button>
             </div>
           </div>
@@ -980,30 +1043,30 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
       </div>
 
     </div></div></div><div class="modal fade" id="modalCrud" tabindex="-1">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="modalCrudTitle">Tambah Data</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body" id="modalCrudBody"></div>
-      <div class="modal-footer">
+      <div class="modal-footer border-0">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-        <button type="button" class="btn-orange" onclick="saveCrud()">Simpan</button>
+        <button type="button" class="btn-orange px-4" onclick="saveCrud()">Simpan Data</button>
       </div>
     </div>
   </div>
 </div>
 
 <div class="modal fade" id="modalAlert" tabindex="-1">
-  <div class="modal-dialog modal-sm">
-    <div class="modal-content">
-      <div class="modal-body text-center py-4">
-        <div id="alertIcon" style="font-size:2.5rem;margin-bottom:8px;"></div>
-        <div id="alertMsg" style="font-size:.9rem;"></div>
+  <div class="modal-dialog modal-sm modal-dialog-centered">
+    <div class="modal-content" style="border-radius: 24px;">
+      <div class="modal-body text-center p-4">
+        <div id="alertIcon" style="font-size:3.5rem; margin-bottom:15px; color: var(--primary-green);"></div>
+        <div id="alertMsg" style="font-size:0.95rem; font-weight: 500; color: var(--text-main);"></div>
       </div>
-      <div class="modal-footer justify-content-center border-0 pt-0">
-        <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
+      <div class="modal-footer justify-content-center border-0 pt-0 pb-4">
+        <button class="btn btn-secondary px-4" data-bs-dismiss="modal" style="border-radius: 12px;">Tutup</button>
       </div>
     </div>
   </div>
@@ -1012,12 +1075,8 @@ body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; min-height: 100
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-// ═══════════════════════════════════════════════════════════
-//  KONFIGURASI — URL diisi via form Setup
-// ═══════════════════════════════════════════════════════════
 let API_URL = "https://script.google.com/macros/s/AKfycbxsH2u6Z8zc8-aFHT4yucjRVcEWvEfCHJc-1Jckcj1GEnO9hhD1d5NAkpOZhQskMEPLPA/exec";
 
-// ── HALAMAN SETUP URL API ─────────────────────────────────
 function showSetupPage() {
   document.getElementById("pageLogin").style.display  = "none";
   document.getElementById("pageSetup").style.display  = "flex";
@@ -1092,15 +1151,14 @@ function skipSetup() { backToLogin(); }
 function updateApiStatusBar() {
   const bar = document.getElementById("apiStatusBar");
   if (API_URL) {
-    bar.style.background = "#EAF3DE"; bar.style.color = "#3B6D11";
+    bar.style.background = "var(--light-green)"; bar.style.color = "var(--primary-green-dark)";
     bar.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i>Terhubung ke Google Sheets';
   } else {
-    bar.style.background = "#FFF3EC"; bar.style.color = "#854F0B";
+    bar.style.background = "#fee2e2"; bar.style.color = "#b91c1c";
     bar.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-1"></i>Mode Demo. <a href="#" onclick="showSetupPage()">Hubungkan</a>';
   }
 }
 
-// ── STATE ─────────────────────────────────────────────────
 let state = {
   user:        null,
   config:      {},
@@ -1118,7 +1176,6 @@ let state = {
   editId:          null,
 };
 
-// ── FORMAT TANGGAL & JAM (WIB) ────────────────────────────
 function formatTanggal(val) {
   if (!val) return "";
   if (/^\d{2}\/\d{2}\/\d{4}$/.test(String(val))) return val;
@@ -1175,7 +1232,6 @@ async function api(action, body = {}) {
   } finally { hideLoading(); }
 }
 
-// ── HELPER UI ───────────────────────────────────────────────
 function showLoading(msg = "Memuat...") {
   document.getElementById("loadingMsg").textContent = msg;
   document.getElementById("loadingOverlay").style.display = "flex";
@@ -1188,7 +1244,6 @@ function showAlert(type, msg) {
   new bootstrap.Modal(document.getElementById("modalAlert")).show();
 }
 
-// ── LOGIN ─────────────────────────────────────────────────
 async function doLogin() {
   const username = document.getElementById("inpUsername").value.trim();
   const password = document.getElementById("inpPassword").value;
@@ -1243,7 +1298,6 @@ function doLogout() {
   document.getElementById("inpPassword").value = "";
 }
 
-// ── HALAMAN ───────────────────────────────────────────────
 function showPage(page) {
   document.querySelectorAll(".page-section").forEach(s => s.classList.remove("active"));
   const el = document.getElementById("sec-" + page);
@@ -1295,7 +1349,6 @@ function closeSidebar() {
   document.getElementById("sidebarOverlay").classList.remove("show");
 }
 
-// ── LOAD MASTER DATA ──────────────────────────────────────
 async function loadMasterData() {
   if (!API_URL) {
     state.kelas = [{ID_Kelas:"K09",Nama_Kelas:"Kelas 5A"},{ID_Kelas:"K10",Nama_Kelas:"Kelas 5B"}];
@@ -1326,7 +1379,6 @@ async function loadMasterData() {
 }
 
 function populateDropdowns() {
-  // Kelas
   const selKelas = ["jb_kelas","fJbKelas","fPsKelas", "ni_kelas", "fNiKelas_Guru", "fNiKelas"];
   selKelas.forEach(id => {
     const el = document.getElementById(id);
@@ -1335,7 +1387,6 @@ function populateDropdowns() {
     state.kelas.forEach(k => el.innerHTML += `<option value="${k.Nama_Kelas}">${k.Nama_Kelas}</option>`);
   });
   
-  // Mapel
   const selMapel = ["jb_mapel", "fJbMapel", "ni_mapel", "fNiMapel"];
   selMapel.forEach(id => {
     const el = document.getElementById(id);
@@ -1344,7 +1395,6 @@ function populateDropdowns() {
     state.mapel.forEach(m => el.innerHTML += `<option value="${m.Nama_Mapel}">${m.Nama_Mapel}</option>`);
   });
 
-  // Guru
   const selGuru = ["fJbGuru","fJpGuru"];
   selGuru.forEach(id => {
     const el = document.getElementById(id);
@@ -1376,8 +1426,6 @@ function setLogoElements(src) {
   document.getElementById("logoPreview").style.background = "transparent";
 }
 
-
-// ── SISTEM INPUT NILAI MASSAL (BULK INPUT) ─────────────────
 function tampilkanDaftarSiswaNilai() {
   const kelas = document.getElementById("ni_kelas").value;
   const mapel = document.getElementById("ni_mapel").value;
@@ -1388,19 +1436,17 @@ function tampilkanDaftarSiswaNilai() {
     return;
   }
 
-  // Filter siswa berdasarkan kelas yang dipilih
   const siswaFilter = state.siswa.filter(s => s.Kelas === kelas);
   const tbody = document.getElementById("tbodySiswaBulk");
 
   if (siswaFilter.length === 0) {
      tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-3">Tidak ada data siswa ditemukan untuk kelas ini.</td></tr>';
   } else {
-     // Render list siswa dengan input type number untuk nilai dan text untuk catatan
      tbody.innerHTML = siswaFilter.map((s, index) => `
         <tr>
            <td class="text-center">${index + 1}</td>
-           <td class="text-secondary">${s.NISN}</td>
-           <td class="fw-bold">${s.Nama}</td>
+           <td class="text-muted" style="font-size:0.8rem;">${s.NISN}</td>
+           <td class="fw-bold" style="color:var(--text-main);">${s.Nama}</td>
            <td>
               <input type="number" class="form-control form-control-sm inp-nilai-bulk" 
                      data-nisn="${s.NISN}" data-nama="${s.Nama}" 
@@ -1414,14 +1460,13 @@ function tampilkanDaftarSiswaNilai() {
      `).join("");
   }
 
-  // Tampilkan tabel bulk input
   document.getElementById("container-bulk-nilai").style.display = "block";
 }
 
 function resetFormNilaiBulk() {
   document.getElementById("ni_kelas").value = "";
   document.getElementById("ni_mapel").value = "";
-  document.getElementById("ni_jenis").value = "Tugas";
+  document.getElementById("ni_jenis").value = "Tugas 1";
   document.getElementById("container-bulk-nilai").style.display = "none";
   document.getElementById("tbodySiswaBulk").innerHTML = "";
 }
@@ -1435,7 +1480,6 @@ async function submitNilaiBulk() {
   const inputs = document.querySelectorAll(".inp-nilai-bulk");
   let dataToSubmit = [];
 
-  // Looping semua form siswa yang tampil, simpan hanya yang ADA nilainya
   inputs.forEach(input => {
       const nilai = input.value.trim();
       if (nilai !== "") {
@@ -1463,7 +1507,6 @@ async function submitNilaiBulk() {
       return;
   }
 
-  // Jika mode demo (tanpa API URL)
   if (!API_URL) {
       dataToSubmit.forEach((d, i) => {
          d.ID_Nilai = "NL" + String(state.nilaiSiswa.length + 1 + i).padStart(4, "0");
@@ -1471,12 +1514,10 @@ async function submitNilaiBulk() {
       });
       showAlert("success", `${dataToSubmit.length} Nilai siswa berhasil disimpan (mode demo).`);
       resetFormNilaiBulk();
-      filterNilaiGuru(); // refresh tabel bawah
+      filterNilaiGuru(); 
       return;
   }
 
-  // Jika live API, karena backend Google Sheet Anda pakai `addNilai` satu per satu, 
-  // kita lakukan pengiriman looping.
   document.getElementById("btnSubmitNilaiBulk").disabled = true;
   showLoading(`Menyimpan ${dataToSubmit.length} data nilai...`);
   
@@ -1502,7 +1543,6 @@ async function submitNilaiBulk() {
   if (successCount > 0) {
       showAlert("success", `Berhasil menyimpan ${successCount} data nilai.` + (failCount > 0 ? ` Gagal: ${failCount}` : ""));
       resetFormNilaiBulk();
-      // Tarik ulang data nilai terbaru
       const r = await api("getNilai");
       if (r) {
           state.nilaiSiswa = r.data;
@@ -1513,39 +1553,38 @@ async function submitNilaiBulk() {
   }
 }
 
-// ── RENDER & FILTER NILAI SISWA ───────────────────────────
 function renderNilaiTable(data, tbodyId) {
   state.activeNi = data;
   const tbody = document.getElementById(tbodyId);
   if (!data.length) {
     const cols = tbodyId === "tbodyNilaiAdmin" ? 8 : 7;
-    tbody.innerHTML = `<tr><td colspan="${cols}" class="text-center text-muted py-3">Belum ada data</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="${cols}" class="text-center text-muted py-4">Belum ada riwayat data</td></tr>`;
     return;
   }
   
   tbody.innerHTML = data.map(r => `
     <tr>
       <td>${formatTanggal(r.Tanggal)}</td>
-      <td>${r.Nama_Siswa||""}<br><small class="text-muted">${r.NISN||""}</small></td>
+      <td>${r.Nama_Siswa||""}<br><small class="text-muted" style="font-size:0.7rem;">${r.NISN||""}</small></td>
       <td>${r.Kelas||""}</td>
       <td>${r.Mapel||""}</td>
-      <td><span class="badge bg-secondary">${r.Jenis_Penilaian||""}</span></td>
-      <td class="fw-bold">${r.Nilai||""}</td>
+      <td><span class="badge" style="background:var(--soft-orange); color:var(--orange-dark);">${r.Jenis_Penilaian||""}</span></td>
+      <td class="fw-bold" style="color:var(--primary-green); font-size:1rem;">${r.Nilai||""}</td>
       ${tbodyId === "tbodyNilaiAdmin" ? `<td>${r.Guru_Pengampu||""}</td>` : ""}
-      <td style="max-width:140px;white-space:normal;color:#888;">${r.Catatan||""}</td>
+      <td style="max-width:140px;white-space:normal;color:var(--text-muted); font-size:0.8rem;">${r.Catatan||""}</td>
     </tr>`).join("");
 }
 
 function filterNilaiGuru() {
   const bulan = document.getElementById("fNiBulan_Guru").value;
   const kelas = document.getElementById("fNiKelas_Guru").value;
-  const jenis = document.getElementById("fNiJenis_Guru").value; // Filter baru
+  const jenis = document.getElementById("fNiJenis_Guru").value; 
   
   let data = state.nilaiSiswa.filter(r => r.Guru_Pengampu === state.user.nama);
   
   if (bulan) data = data.filter(r => formatTanggal(r.Tanggal).slice(3,5) === bulan);
   if (kelas) data = data.filter(r => r.Kelas === kelas);
-  if (jenis) data = data.filter(r => r.Jenis_Penilaian === jenis); // Logika filter baru
+  if (jenis) data = data.filter(r => r.Jenis_Penilaian === jenis); 
   
   renderNilaiTable(data, "tbodyNilaiGuru");
 }
@@ -1554,18 +1593,17 @@ function filterNilaiAdmin() {
   const bulan = document.getElementById("fNiBulan").value;
   const kelas = document.getElementById("fNiKelas").value;
   const mapel = document.getElementById("fNiMapel").value;
-  const jenis = document.getElementById("fNiJenis").value; // Filter baru
+  const jenis = document.getElementById("fNiJenis").value; 
   
   let data = [...state.nilaiSiswa];
   if (bulan) data = data.filter(r => formatTanggal(r.Tanggal).slice(3,5) === bulan);
   if (kelas) data = data.filter(r => r.Kelas === kelas);
   if (mapel) data = data.filter(r => r.Mapel === mapel);
-  if (jenis) data = data.filter(r => r.Jenis_Penilaian === jenis); // Logika filter baru
+  if (jenis) data = data.filter(r => r.Jenis_Penilaian === jenis); 
   
   renderNilaiTable(data, "tbodyNilaiAdmin");
 }
 
-// ── LAIN-LAIN (CRUD & JURNAL) ─────────────────────────────
 async function submitJurnalBelajar() {
   const kelas  = document.getElementById("jb_kelas").value;
   const mapel  = document.getElementById("jb_mapel").value;
@@ -1646,7 +1684,7 @@ document.getElementById("ps_siswa_search").addEventListener("input", function() 
   );
   if (!matches.length) { dd.style.display = "none"; return; }
   dd.innerHTML = matches.map(s =>
-    `<button class="list-group-item list-group-item-action" style="font-size:.82rem;" onclick="selectSiswa('${s.NISN}','${s.Nama}','${s.Kelas}')">${s.Nama} — ${s.Kelas} (${s.NISN})</button>`
+    `<button class="list-group-item list-group-item-action" style="font-size:0.85rem; padding:10px 15px;" onclick="selectSiswa('${s.NISN}','${s.Nama}','${s.Kelas}')"><b style="color:var(--primary-green);">${s.Nama}</b> <br><small class="text-muted">${s.Kelas} (${s.NISN})</small></button>`
   ).join("");
   dd.style.display = "block";
 });
@@ -1666,7 +1704,7 @@ function renderJurnalBelajar(filtered) {
   state.activeJb = data;
   const tbody = document.getElementById("tbodyJurnalBelajar");
   if (!data.length) {
-    tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted py-3">Belum ada data</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted py-4">Belum ada data</td></tr>';
     return;
   }
   tbody.innerHTML = data.map(r => `
@@ -1675,7 +1713,7 @@ function renderJurnalBelajar(filtered) {
       <td class="text-center">${r.Jam_Ke||""}</td><td>${formatJam(r.Jam_Masuk)}</td>
       <td>${r.Guru_Pengampu||""}</td><td><span class="badge ${r.Status_Guru==="Inval"?"badge-inval":"badge-pengampu"}">${r.Status_Guru||""}</span></td>
       <td>${r.Metode||"—"}</td><td style="max-width:180px;white-space:normal;">${r.Materi||"—"}</td>
-      <td style="max-width:140px;white-space:normal;color:#888;">${r.Catatan||""}</td>
+      <td style="max-width:140px;white-space:normal;color:var(--text-muted); font-size:0.8rem;">${r.Catatan||""}</td>
     </tr>`).join("");
   const now   = new Date(); const bulan = String(now.getMonth()+1).padStart(2,"0");
   document.getElementById("st_jb_total").textContent = data.length;
@@ -1708,10 +1746,10 @@ function renderPelatihan(filtered) {
   const data  = filtered !== undefined ? filtered : state.jurnalPelatihan;
   state.activeJp = data;
   const tbody = document.getElementById("tbodyPelatihan");
-  if (!data.length) { tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Belum ada data</td></tr>'; return; }
+  if (!data.length) { tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">Belum ada data</td></tr>'; return; }
   tbody.innerHTML = data.map(r => `
     <tr>
-      <td>${formatTanggal(r.Tanggal)}</td><td>${r.Nama_Pelatihan||""}</td><td>${r.Penyelenggara||""}</td>
+      <td>${formatTanggal(r.Tanggal)}</td><td class="fw-bold" style="color:var(--primary-green);">${r.Nama_Pelatihan||""}</td><td>${r.Penyelenggara||""}</td>
       <td>${r.Guru_Peserta||""}</td><td>${r.Durasi||""} jam</td>
       <td><span class="badge ${r.Sertifikat==="Ya"?"badge-pengampu":"badge-inval"}">${r.Sertifikat||""}</span></td>
     </tr>`).join("");
@@ -1729,11 +1767,11 @@ function renderPrestasiTable(filtered) {
   const data  = filtered !== undefined ? filtered : state.prestasi;
   state.activePs = data;
   const tbody = document.getElementById("tbodyPrestasi");
-  if (!data.length) { tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Belum ada data</td></tr>'; return; }
+  if (!data.length) { tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">Belum ada data</td></tr>'; return; }
   tbody.innerHTML = data.map(r => `
     <tr>
-      <td>${formatTanggal(r.Tanggal)}</td><td>${r.Nama_Siswa||""}</td><td>${r.Kelas||""}</td>
-      <td>${r.Nama_Lomba||""}</td><td>${r.Tingkat||""}</td>
+      <td>${formatTanggal(r.Tanggal)}</td><td class="fw-bold text-dark">${r.Nama_Siswa||""}</td><td>${r.Kelas||""}</td>
+      <td style="color:var(--primary-green); font-weight:500;">${r.Nama_Lomba||""}</td><td>${r.Tingkat||""}</td>
       <td><span class="badge badge-pengampu">${r.Peringkat||""}</span></td>
     </tr>`).join("");
 }
@@ -1750,59 +1788,59 @@ function renderGuru() {
   const tbody = document.getElementById("tbodyGuru");
   tbody.innerHTML = state.guru.map(r => `
     <tr>
-      <td>${r.ID_Guru}</td><td>${r.Nama}</td><td>${r.NIP||""}</td>
+      <td>${r.ID_Guru}</td><td class="fw-bold">${r.Nama}</td><td>${r.NIP||""}</td>
       <td>${r.Mata_Pelajaran||""}</td><td>${r.No_HP||""}</td>
       <td>
-        <button class="btn btn-sm btn-outline-primary action-btn me-1" onclick="openModal('guru','${r.ID_Guru}')"><i class="bi bi-pencil"></i></button>
-        <button class="btn btn-sm btn-outline-danger action-btn" onclick="delRecord('guru','${r.ID_Guru}')"><i class="bi bi-trash"></i></button>
+        <button class="btn btn-sm btn-outline-primary action-btn shadow-sm" onclick="openModal('guru','${r.ID_Guru}')"><i class="bi bi-pencil"></i></button>
+        <button class="btn btn-sm btn-outline-danger action-btn shadow-sm" onclick="delRecord('guru','${r.ID_Guru}')"><i class="bi bi-trash"></i></button>
       </td>
-    </tr>`).join("") || '<tr><td colspan="6" class="text-center text-muted">Belum ada data</td></tr>';
+    </tr>`).join("") || '<tr><td colspan="6" class="text-center text-muted py-4">Belum ada data</td></tr>';
 }
 function renderSiswa() {
   const tbody = document.getElementById("tbodySiswa");
   tbody.innerHTML = state.siswa.map(r => `
     <tr>
-      <td>${r.NISN}</td><td>${r.Nama}</td><td>${r.Kelas||""}</td>
+      <td class="text-muted">${r.NISN}</td><td class="fw-bold">${r.Nama}</td><td>${r.Kelas||""}</td>
       <td>${r.Jenis_Kelamin||""}</td><td>${r.No_HP_Ortu||""}</td>
       <td>
-        <button class="btn btn-sm btn-outline-primary action-btn me-1" onclick="openModal('siswa','${r.NISN}')"><i class="bi bi-pencil"></i></button>
-        <button class="btn btn-sm btn-outline-danger action-btn" onclick="delRecord('siswa','${r.NISN}')"><i class="bi bi-trash"></i></button>
+        <button class="btn btn-sm btn-outline-primary action-btn shadow-sm" onclick="openModal('siswa','${r.NISN}')"><i class="bi bi-pencil"></i></button>
+        <button class="btn btn-sm btn-outline-danger action-btn shadow-sm" onclick="delRecord('siswa','${r.NISN}')"><i class="bi bi-trash"></i></button>
       </td>
-    </tr>`).join("") || '<tr><td colspan="6" class="text-center text-muted">Belum ada data</td></tr>';
+    </tr>`).join("") || '<tr><td colspan="6" class="text-center text-muted py-4">Belum ada data</td></tr>';
 }
 function renderKelas() {
   const tbody = document.getElementById("tbodyKelas");
   tbody.innerHTML = state.kelas.map(r => `
     <tr>
-      <td>${r.ID_Kelas}</td><td>${r.Nama_Kelas}</td><td>${r.Tingkat||""}</td><td>${r.Wali_Kelas||""}</td>
+      <td>${r.ID_Kelas}</td><td class="fw-bold" style="color:var(--primary-green);">${r.Nama_Kelas}</td><td>${r.Tingkat||""}</td><td>${r.Wali_Kelas||""}</td>
       <td>
-        <button class="btn btn-sm btn-outline-primary action-btn me-1" onclick="openModal('kelas','${r.ID_Kelas}')"><i class="bi bi-pencil"></i></button>
-        <button class="btn btn-sm btn-outline-danger action-btn" onclick="delRecord('kelas','${r.ID_Kelas}')"><i class="bi bi-trash"></i></button>
+        <button class="btn btn-sm btn-outline-primary action-btn shadow-sm" onclick="openModal('kelas','${r.ID_Kelas}')"><i class="bi bi-pencil"></i></button>
+        <button class="btn btn-sm btn-outline-danger action-btn shadow-sm" onclick="delRecord('kelas','${r.ID_Kelas}')"><i class="bi bi-trash"></i></button>
       </td>
-    </tr>`).join("") || '<tr><td colspan="5" class="text-center text-muted">Belum ada data</td></tr>';
+    </tr>`).join("") || '<tr><td colspan="5" class="text-center text-muted py-4">Belum ada data</td></tr>';
 }
 function renderMapel() {
   const tbody = document.getElementById("tbodyMapel");
   tbody.innerHTML = state.mapel.map(r => `
     <tr>
-      <td>${r.ID_Mapel}</td><td>${r.Nama_Mapel}</td><td>${r.Kode||""}</td>
+      <td>${r.ID_Mapel}</td><td class="fw-bold">${r.Nama_Mapel}</td><td><span class="badge" style="background:#e2e8f0; color:#475569;">${r.Kode||""}</span></td>
       <td>
-        <button class="btn btn-sm btn-outline-primary action-btn me-1" onclick="openModal('mapel','${r.ID_Mapel}')"><i class="bi bi-pencil"></i></button>
-        <button class="btn btn-sm btn-outline-danger action-btn" onclick="delRecord('mapel','${r.ID_Mapel}')"><i class="bi bi-trash"></i></button>
+        <button class="btn btn-sm btn-outline-primary action-btn shadow-sm" onclick="openModal('mapel','${r.ID_Mapel}')"><i class="bi bi-pencil"></i></button>
+        <button class="btn btn-sm btn-outline-danger action-btn shadow-sm" onclick="delRecord('mapel','${r.ID_Mapel}')"><i class="bi bi-trash"></i></button>
       </td>
-    </tr>`).join("") || '<tr><td colspan="4" class="text-center text-muted">Belum ada data</td></tr>';
+    </tr>`).join("") || '<tr><td colspan="4" class="text-center text-muted py-4">Belum ada data</td></tr>';
 }
 function renderUsers() {
   const tbody = document.getElementById("tbodyUsers");
   tbody.innerHTML = state.users.map(r => `
     <tr>
-      <td>${r.Username}</td><td>${r.Nama_Lengkap||""}</td>
+      <td class="fw-bold">${r.Username}</td><td>${r.Nama_Lengkap||""}</td>
       <td><span class="badge ${r.Role==="admin"?"badge-admin":"badge-guru"}">${r.Role}</span></td>
       <td>
-        <button class="btn btn-sm btn-outline-primary action-btn me-1" onclick="openModal('users','${r.Username}')"><i class="bi bi-pencil"></i></button>
-        ${r.Role!=="admin"?`<button class="btn btn-sm btn-outline-danger action-btn" onclick="delRecord('users','${r.Username}')"><i class="bi bi-trash"></i></button>`:""}
+        <button class="btn btn-sm btn-outline-primary action-btn shadow-sm" onclick="openModal('users','${r.Username}')"><i class="bi bi-pencil"></i></button>
+        ${r.Role!=="admin"?`<button class="btn btn-sm btn-outline-danger action-btn shadow-sm" onclick="delRecord('users','${r.Username}')"><i class="bi bi-trash"></i></button>`:""}
       </td>
-    </tr>`).join("") || '<tr><td colspan="4" class="text-center text-muted">Belum ada data</td></tr>';
+    </tr>`).join("") || '<tr><td colspan="4" class="text-center text-muted py-4">Belum ada data</td></tr>';
 }
 
 function openModal(mode, id) {
@@ -1817,30 +1855,30 @@ function openModal(mode, id) {
   }
   const v = (f) => record ? (record[f]||"") : "";
   const forms = {
-    guru: `<div class="row g-2">
+    guru: `<div class="row g-3">
       <div class="col-6"><label class="form-label">ID Guru</label><input id="m_id" class="form-control" value="${v("ID_Guru")}" ${isEdit?"readonly":""}/></div>
       <div class="col-6"><label class="form-label">Nama Lengkap</label><input id="m_nama" class="form-control" value="${v("Nama")}"/></div>
       <div class="col-6"><label class="form-label">NIP</label><input id="m_nip" class="form-control" value="${v("NIP")}"/></div>
       <div class="col-6"><label class="form-label">Mata Pelajaran</label><input id="m_mapel" class="form-control" value="${v("Mata_Pelajaran")}"/></div>
       <div class="col-6"><label class="form-label">No HP</label><input id="m_hp" class="form-control" value="${v("No_HP")}"/></div>
       <div class="col-6"><label class="form-label">Email</label><input id="m_email" class="form-control" value="${v("Email")}"/></div></div>`,
-    siswa: `<div class="row g-2">
+    siswa: `<div class="row g-3">
       <div class="col-6"><label class="form-label">NISN</label><input id="m_nisn" class="form-control" value="${v("NISN")}" ${isEdit?"readonly":""}/></div>
       <div class="col-6"><label class="form-label">Nama</label><input id="m_nama" class="form-control" value="${v("Nama")}"/></div>
       <div class="col-6"><label class="form-label">Kelas</label><input id="m_kelas" class="form-control" value="${v("Kelas")}"/></div>
       <div class="col-6"><label class="form-label">Jenis Kelamin</label><select id="m_jk" class="form-select"><option ${v("Jenis_Kelamin")==="L"?"selected":""} value="L">Laki-laki</option><option ${v("Jenis_Kelamin")==="P"?"selected":""} value="P">Perempuan</option></select></div>
       <div class="col-12"><label class="form-label">Alamat</label><input id="m_alamat" class="form-control" value="${v("Alamat")}"/></div>
       <div class="col-6"><label class="form-label">No HP Ortu</label><input id="m_hp" class="form-control" value="${v("No_HP_Ortu")}"/></div></div>`,
-    kelas: `<div class="row g-2">
+    kelas: `<div class="row g-3">
       <div class="col-6"><label class="form-label">ID Kelas</label><input id="m_id" class="form-control" value="${v("ID_Kelas")}" ${isEdit?"readonly":""}/></div>
       <div class="col-6"><label class="form-label">Nama Kelas</label><input id="m_nama" class="form-control" value="${v("Nama_Kelas")}"/></div>
       <div class="col-6"><label class="form-label">Tingkat</label><input id="m_tingkat" class="form-control" value="${v("Tingkat")}"/></div>
       <div class="col-6"><label class="form-label">Wali Kelas</label><input id="m_wali" class="form-control" value="${v("Wali_Kelas")}"/></div></div>`,
-    mapel: `<div class="row g-2">
+    mapel: `<div class="row g-3">
       <div class="col-4"><label class="form-label">ID Mapel</label><input id="m_id" class="form-control" value="${v("ID_Mapel")}" ${isEdit?"readonly":""}/></div>
       <div class="col-5"><label class="form-label">Nama Mapel</label><input id="m_nama" class="form-control" value="${v("Nama_Mapel")}"/></div>
       <div class="col-3"><label class="form-label">Kode</label><input id="m_kode" class="form-control" value="${v("Kode")}"/></div></div>`,
-    users: `<div class="row g-2">
+    users: `<div class="row g-3">
       <div class="col-6"><label class="form-label">Username</label><input id="m_username" class="form-control" value="${v("Username")}" ${isEdit?"readonly":""}/></div>
       <div class="col-6"><label class="form-label">Password ${isEdit?"(kosongkan jika tidak ganti)":""}</label><input type="password" id="m_password" class="form-control" placeholder="${isEdit?"(tidak diubah)":"wajib diisi"}"/></div>
       <div class="col-6"><label class="form-label">Nama Lengkap</label><input id="m_namalengkap" class="form-control" value="${v("Nama_Lengkap")}"/></div>
@@ -1919,7 +1957,6 @@ async function delRecord(mode, id) {
   else if (res) showAlert("danger", res.message);
 }
 
-// ── KONFIGURASI ───────────────────────────────────────────
 function loadKonfigurasi() {
   const cfg = state.config;
   document.getElementById("cfg_nama").value   = cfg.nama_sekolah  || "";
@@ -1966,7 +2003,6 @@ function resetForm(prefix) {
   (fields[prefix]||[]).forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
 }
 
-// ── EXPORT PDF ──────────────────────────────────────────
 function downloadPDF(type) {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: [330.2, 215.9] });
@@ -1979,7 +2015,7 @@ function downloadPDF(type) {
   const pageHeight = doc.internal.pageSize.getHeight();
   const centerX = pageWidth / 2;
 
-  doc.setFillColor(232, 101, 10); doc.rect(0, 0, pageWidth, 22, "F");
+  doc.setFillColor(21, 128, 61); doc.rect(0, 0, pageWidth, 22, "F");
   doc.setTextColor(255,255,255); doc.setFontSize(15); doc.setFont(undefined,"bold");
   doc.text(namaSekolah, centerX, 10, {align:"center"});
   doc.setFontSize(8); doc.setFont(undefined,"normal");
@@ -2022,8 +2058,8 @@ function downloadPDF(type) {
   doc.autoTable({
     startY: 40, head, body,
     styles: { fontSize: 7, cellPadding: 2, overflow: 'linebreak' },
-    headStyles: { fillColor: [232, 101, 10], textColor: 255, fontStyle: "bold" },
-    alternateRowStyles: { fillColor: [255, 243, 236] },
+    headStyles: { fillColor: [21, 128, 61], textColor: 255, fontStyle: "bold" },
+    alternateRowStyles: { fillColor: [240, 253, 244] },
     margin: { left: 10, right: 10, bottom: 20 },
   });
 
@@ -2045,7 +2081,6 @@ function downloadPDF(type) {
   doc.save((titles[type]||"rekap") + "_" + today.replace(/ /g,"_") + ".pdf");
 }
 
-// ── EXPORT EXCEL ────────────────────────────────────────
 function downloadExcel(type) {
   const cfg = state.config;
   const today = new Date().toLocaleDateString("id-ID");
@@ -2077,11 +2112,9 @@ function downloadExcel(type) {
     ];
   }
 
-  // --- BAGIAN YANG DIPERBAIKI (WAJIB ADA) ---
   const ws = XLSX.utils.aoa_to_sheet(wsData);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "Rekap");
-  // ------------------------------------------
 
   const fileName = type + "_" + today.replace(/\//g,"-") + ".xlsx";
   const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
@@ -2107,8 +2140,8 @@ function downloadExcel(type) {
   } catch (e) {
       console.log("Download error: " + e);
   }
-} // <--- Pastikan kurung tutup fungsi ada di sini
-// ── INIT ──────────────────────────────────────────────────
+} 
+
 (function init() {
   const saved = localStorage.getItem("SDIT_SESSION");
   if (saved) {
