@@ -1340,7 +1340,7 @@ function applyUserUI() {
   const u = state.user;
   const initials = u.nama ? u.nama.split(" ").map(w=>w[0]).join("").toUpperCase().slice(0,2) : "--";
   document.getElementById("userAvatar").textContent    = initials;
-  document.getElementById("userNameChip").textContent  = u.nama;
+  document.getElementById("userNameChip").textContent  = full.nama;
   document.getElementById("sidebarRoleBadge").textContent = u.role === "admin" ? "Administrator" : "Guru";
   document.getElementById("navGuru").style.display  = u.role === "guru"  ? "block" : "none";
   document.getElementById("navAdmin").style.display = u.role === "admin" ? "block" : "none";
